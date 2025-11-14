@@ -159,7 +159,7 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 
 			local function nestval(key, val: { [any]: any })
 				-- case 1, v is amplified table
-				if typeof(val) == "table" and (val._updaters or (v.custom and v.updater and not v.__kind)) then
+				if typeof(val) == "table" and (val._updaters or (val.custom and val.updater and not val.__kind)) then
 					-- will turn it into a table
 
 					(self.__value :: any)[key] = val:get()

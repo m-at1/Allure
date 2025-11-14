@@ -18,7 +18,7 @@ return (
 		local stateValues = function(...)
 			local values = {}
 			for _, v in pairs { ... } do
-				values[#values + 1] = v.get and v:get() or v
+				values[#values + 1] = if v.get ~= nil then v:get() else v
 			end
 			return table.unpack(values)
 		end

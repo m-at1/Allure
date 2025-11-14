@@ -41,8 +41,7 @@ export type StateObject<T, V={}> = (typeof(
 	setmetatable({} :: State<T>, {__index = function() end})
 	) & V --& State<T>
 )
-
-export type StateConstructor = (garbage<unknown>, unknown)->(StateObject<unknown>)
+export type StateConstructor = (garbage: garbage<unknown>, value: unknown)->(StateObject<unknown>)
 
 --[=[
 	Contents of a garbage collector
@@ -60,9 +59,7 @@ export type trashable =
 
 export type garbage<T={}> = typeof(setmetatable( {} :: {trashable}, {} :: {__call: ()->()}) ) & T
 
---[=[
-	Garbage collector out of (up to) 11 combined component tables
-]=]
+
 export type garbageConstructor =
 	& (() -> garbage & {})
 	& (<S>(garbage & S) -> garbage & S)
@@ -107,9 +104,7 @@ export type garbageConstructor =
 
 --[[ @section Amplified Tables ]]
 
---[=[
-	Inner & outer table state block
-]=]
+
 export type Amplified<T, V={}> = typeof(
 	setmetatable( {} :: { --}, {} :: {})--__index: (...any?)->(...any?), __newindex: (...any?)->(...any?)} )
 --) & {
@@ -143,11 +138,9 @@ export type Amplified<T, V={}> = typeof(
 , {} :: {})
 ) & V
 
-export type AmplifiedConstructor = (garbage<unknown>, unknown)->(Amplified<unknown>)
+export type AmplifiedConstructor = (garbage: garbage<unknown>, table: unknown)->(Amplified<unknown>)
 
---[=[
-	Amplified Specialvalues
-]=]
+
 export type onSet = (prop: string) -> (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"onset", {["fn"]: (self: Amplified<unknown>, object: Instance, ...any?)->...any?} & {["onset"]: string}>
 export type onChange = (prop: string) -> (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"onchange", {["fn"]: (self: Amplified<unknown>, object: Instance, ...any?)->...any?} & {["onchange"]: string}>
 export type onEvent = (event: string) -> (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"onevent", {["fn"]: (self: Amplified<unknown>, object: Instance, ...any?)->...any?} & {["event"]: string}>
@@ -162,22 +155,128 @@ export type mount = <T>(garbage: garbage<any>, object: Instance, amplified: Ampl
 export type Alloy = {
 	_version: {major: number, minor: number, isRelease: boolean},
 	
+	--[=[
+		Creates a garbage collector with methods from the parameters.
+
+		@param ...	*`string: function` tables.*
+
+		@return `object` or `fn(amplified, object)`
+	]=]
 	garbage: garbageConstructor,
 
+	--[=[
+		State constructor.
+
+		@param garbage    *Garbage Collector*
+		@param value    *Initial value*
+		@within Alloy
+
+		@return StateObject
+	]=]
 	State: StateConstructor,
-	get: (State<unknown>)->any?,
-	set: (State<unknown>, ...any?)->any?,
+
+	--[=[
+		Returns the actual value of a StateObject, avoids the getter method.
+
+		@param state    *StateObject*
+
+		@return The actual value
+	]=]
+	get: (state: State<unknown>)->any?,
+
+	--[=[
+		Sets the actual value of a StateObject, avoids the getter and setter methods.
+
+		@param state    *StateObject*
+
+		@return The new actual value.
+	]=]
+	set: (state: State<unknown>, ...any?)->any?,
 	
-	--Amplify: AmplifiedConstructor,
+	--[=[
+		Creates an Amplified table.
+
+		@param garbage    *Garbage Collector*
+		@param table	*The table to convert into an Amplified*
+
+		@return The amplified table.
+	]=]
+	Amplify: AmplifiedConstructor,
+
+	--[=[
+		Returns an event for use in Amplified tables.
+
+		Fires whenever `prop` within the Amplified is set a new value.
+
+		**Does not track indirect changes like `object.prop = value`**
+
+		@param prop  *The property to track for changes*
+		@param table  *The table to convert into an Amplified*
+
+		@return A function that requires a callback with the parameters: Amplified Table, object.
+	]=]
 	onSet: onSet,
+
+	--[=[
+		Returns an `event` event for use in Amplified tables.
+
+		This will only work on mounted Amplified tables.
+
+		@param event  *The event*
+		@param table  *The table to convert into an Amplified*
+
+		@return A function that requires a callback with the parameters: Amplified Table, object, args passed by the event.
+	]=]
 	onEvent: onEvent,
+
+	--[=[
+		Returns an `GetPropertyChangedSignal` event on `prop` for use in Amplified tables.
+
+		This will only work on mounted Amplified tables.
+
+		@param prop  *The property to track for all changes*
+		@param table  *The table to convert into an Amplified*
+
+		@return A function that requires a callback with the parameters: Amplified Table, object, new value.
+	]=]
 	onChange: onChange,
 	
+	--[=[
+		Mounts an Amplified table on an `instance`.
+
+		@param garbage  *Garbage Collector*
+		@param object  *The object to mount the Amplified on*
+		@param amplified *The Amplified table*
+		@param fn *Optional function that decides what the mounting will return*
+		@param lifetime *Optional function that will be called and halted when the mounted object is cleaned*
+
+		@return `object` or `fn(amplified, object)`
+	]=]
 	mount: mount,
 	
+	--[=[
+		Preset extension Computed.
+	]=]
 	Computed: (trash: garbage<Alloy & {} & any>, fn: (with: (...any)->(), innertrash: garbage) -> ()) -> StateObject<nil>,
+
+	--[=[
+		Preset extension Effect.
+	]=]
 	Effect: (trash: garbage<Alloy & {} & any>, fn: (with: (...any)->(), innertrash: garbage) -> ()) -> StateObject<nil>,
+
+	--[=[
+		Preset extension Observer.
+	]=]
 	Observer: (trash: garbage<unknown>)->{_destroy: ()->(), onBind: ((...any?)->())->()->(), onChange: ((...any?)->())->()->()},
+
+	--[=[
+		Preset extension New.
+
+		@param garbage	*Garbage Collector*
+		@param object	*The object to create, string*
+
+		@return Instance
+	]=]
 	New: (trash: garbage<unknown>, object: string) -> (propTable: {[number | string]: any} | Amplified<unknown>) -> Instance
 }
 
