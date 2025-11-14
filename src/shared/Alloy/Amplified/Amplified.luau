@@ -10,7 +10,7 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 		Log.logError("noGarbage", "...:Amplified {}")
 	end
 	if typeof(initialvalue) ~= "table" then
-		Log.logError("amplifiedTable")
+		Log.logError "amplifiedTable"
 	end
 
 	local self: Types.Amplified<unknown, {}> = {} :: Types.Amplified<unknown, {}>
@@ -132,7 +132,7 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 		self: Types.Amplified<unknown>,
 		name: any?
 	): (fn: nil | (...any?) -> any?) -> Types.Amplified<unknown>
-		return function(fn: nil | (any?) -> any?)
+		return function(fn: nil | (...any?) -> any?)
 			if name == nil then
 				name = fn
 			end
@@ -146,76 +146,6 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 	local newself
 	newself = setmetatable({}, {
 		__index = self,
-		--[[__newindexa = function(_, k, v)
-				-- exists an updater and previous value is state
-				if self._updaters[k] and (typeof((self.__value :: any)[k])=="table" and (self.__value :: any)[k].__value) then
-					(self.__value :: any)[k]:connect(self._updaters[k])(nil)
-				end
-
-				rawset(self.__value, k, v)
-				--self.__enumerated[k]=v 
-				
-				-- exists an updater and previous value is not state (table excluded)
-				if self._updaters[k] and (self.__value :: any)[k] and not (typeof((self.__value :: any)[k])=="table" and (self.__value :: any)[k].__value) then
-					self._updaters[k](self, k, v)
-				end
-				
-				
-				
-				if typeof(v)=="table" and v.__value and typeof(k) == "string" then
-					k = k :: string
-					if self._updaters[k] then
-						Log.logError("amplifiedDoubleConnection", k)
-					end
-					self._updaters[k] = function()		--the only time the function is initialized
-						rawset(self.__value, k, v)		--setting it to states ; value-only is via alloy.mount
-						self.__enumerated[k]=v:get()	--value-only
-						self.__updater(k, v) 
-						--warn("got an update")
-						--...
-					end
-					
-					self._updaters[k]()
-					v:connect(self._updaters[k])(self._updaters[k])
-				elseif typeof(v)=="table" and v.__value and typeof(k) == "number" then
-					
-
-				elseif typeof(k)=="number" and typeof(v)=="table" and v.__kind then
-					
-					warn(v.prop, self._updaters)
-					
-					local _ = 1
-					
-					(v.__kind=="onchange" and (function() 
-						if self._updaters[v.prop] then
-							Log.logError("amplifiedDoubleConnection", v.prop)
-						end
-						self._updaters[v.prop] = v.fn
-						
-					end)
-							
-						or 
-					(v.__kind=="onevent" and (function()
-						self.__events[v.event] = v.fn	
-					end) 
-						or 
-					(v.__kind=="lifetime" and (function()
-						--TODO		
-					end)
-						or function()
-							print("niche")
-					end)))()
-				elseif typeof(k)~="string" and typeof(v) == "Instance" then
-					self.__children[#self.__children+1] = v
-					self.__updater(k, v) 
-					
-				elseif typeof(k) == "string" then
-					self.__enumerated[k]=v
-				elseif typeof(v) == "function" then
-					warn "here"
-				end
-			end,]]
-
 		__newindex = function(_, k, v)
 			-- case 3: if v was a state/different state, disconnect it
 			if self._states[k] then
@@ -227,7 +157,7 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 				st[k] = nil
 			end
 
-			local function nestval(key, val)
+			local function nestval(key, val: { [any]: any })
 				-- case 1, v is amplified table
 				if typeof(val) == "table" and (val._updaters or (v.custom and v.updater and not v.__kind)) then
 					-- will turn it into a table
@@ -276,17 +206,17 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 		end,
 	})
 
-	setmetatable(self, {
-		__index = self.__value, --self.__customs,
-		__newindex = self.__value,
-	})
-
 	setmetatable(self.__value :: any, {
 		__index = self.__customs,
 	})
 
 	setmetatable(self.__customs :: any, {
 		__index = self._states,
+	})
+
+	setmetatable(self, {
+		__index = self.__value, --self.__customs,
+		__newindex = self.__value,
 	})
 
 	for k, v in initialvalue do
