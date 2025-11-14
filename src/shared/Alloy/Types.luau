@@ -168,7 +168,7 @@ export type Alloy = {
 	get: (State<unknown>)->any?,
 	set: (State<unknown>, ...any?)->any?,
 	
-	Amplify: AmplifiedConstructor,
+	--Amplify: AmplifiedConstructor,
 	onSet: onSet,
 	onEvent: onEvent,
 	onChange: onChange,
