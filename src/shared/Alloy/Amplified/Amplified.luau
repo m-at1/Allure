@@ -54,10 +54,7 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 
 	self.__customs = {}
 	self.connections = {}
-	self.__events = {}
 	self._states = {}
-	self.__enumerated = {}
-	self.__children = {}
 	self._onsets = {} --[string]: {functions}
 
 	table.insert(trash, self)
@@ -163,6 +160,8 @@ function constructor(trash: any, initialvalue: { [unknown]: unknown }): any
 					-- will turn it into a table
 
 					(self.__value :: any)[key] = val:get()
+					nestval(key, val:get())
+
 					self._states[key] = val :: any
 					self._updaters[key] = function()
 						nestval(key, val:get())

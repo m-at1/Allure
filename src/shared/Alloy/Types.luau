@@ -140,7 +140,6 @@ export type Amplified<T, V={}> = typeof(
 
 export type AmplifiedConstructor = (garbage: garbage<unknown>, table: unknown)->(Amplified<unknown>)
 
-
 export type onSet = (prop: string) -> (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"onset", {["fn"]: (self: Amplified<unknown>, object: Instance, ...any?)->...any?} & {["onset"]: string}>
 export type onChange = (prop: string) -> (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"onchange", {["fn"]: (self: Amplified<unknown>, object: Instance, ...any?)->...any?} & {["onchange"]: string}>
 export type onEvent = (event: string) -> (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"onevent", {["fn"]: (self: Amplified<unknown>, object: Instance, ...any?)->...any?} & {["event"]: string}>
@@ -148,6 +147,19 @@ export type onEvent = (event: string) -> (fn: (self: Amplified<unknown>)->...any
 export type Lifetime = (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue<"lifetime", {["fn"]: (self: Amplified<unknown>)->...any?}>
 
 export type mount = <T>(garbage: garbage<any>, object: Instance, amplified: Amplified<unknown>, fn: nil | (self: any, object: Instance)->...any, lifetime: nil | (self: any, object: Instance)->...any)->T
+
+
+export type SchemaTypes = {
+	
+}
+
+export type SharedAmplified = {
+	All: (SharedAmplified, values: {[string | number]: any?} ) -> SharedAmplified,  
+	For: (SharedAmplified, players: {Player}, values: {[string | number]: any?} ) -> SharedAmplified,
+	getFor: (SharedAmplified, player: Player) -> ...any?,
+
+	__replications: {[Player]: Amplified<unknown, unknown> }
+} & Amplified<unknown, unknown>
 
 --[[ @end_section Amplified Tables ]]
 
@@ -254,6 +266,19 @@ export type Alloy = {
 	]=]
 	mount: mount,
 	
+	--[=[
+		Mounts an Amplified table on an `instance`.
+
+		@param garbage  *Garbage Collector*
+		@param object  *The object to mount the Amplified on*
+		@param amplified *The Amplified table*
+		@param fn *Optional function that decides what the mounting will return*
+		@param lifetime *Optional function that will be called and halted when the mounted object is cleaned*
+
+		@return `object` or `fn(amplified, object)`
+	]=]
+	Shared: (tbl: {})->(),
+
 	--[=[
 		Preset extension Computed.
 	]=]

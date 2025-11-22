@@ -1,5 +1,6 @@
 --!strict
 
+local SharedHandler = require "@self/Boundary/SharedHandler"
 local Types = require(script.Types)
 
 export type State<T = any> = Types.StateObject<T>
@@ -19,6 +20,8 @@ local onEvent = require(script.Amplified.onEvent)
 local onChange = require(script.Amplified.onChange)
 
 local mount = require(script.Amplified.mount)
+
+local SharedAmplified = require(script.Boundary.SharedHandler)
 
 local Computed = require(script.presetExtensions.Computed)
 local Effect = require(script.presetExtensions.Effect)
@@ -42,6 +45,8 @@ local Alloy = table.freeze {
 	onChange = onChange,
 
 	mount = mount :: Types.mount,
+
+	Shared = SharedHandler,
 
 	Computed = Computed,
 	Effect = Effect,

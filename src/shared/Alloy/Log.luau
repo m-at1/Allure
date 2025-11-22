@@ -10,6 +10,9 @@ local errors = {
 	amplifiedDoubleConnection = 'Attempt to connect an amplified table\'s property "%s" twice',
 	onEventNone = 'Event "%s" passed to Alloy.onEvent does not exist for the object %s',
 	onChangeNone = 'Property "%s" passed to Alloy.onChange does not exist for the object %s',
+
+	clientsideSharedMod = "Attempt to modify shared amplified on the client.",
+	strangeSharedMod = "Bulk modification of shared amplified received non-table value.",
 }
 
 return {
