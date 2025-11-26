@@ -21,8 +21,20 @@
 > Alloy has major plans for the upcoming features. </br>
 > There are several instances of unfinished documentation, code, and issues.
 
+### Contents
+- Architectural design patterns
+- Introducing
+- License
+
+## 🍀 Architectural design patterns
+- 🪟 ***Model-View-Controller***
+  - Alloy induces a MVC pattern with Model divided into Data & Logic and View as Design & State. Utilizing alloy to the full extent implies creating a game with Services, logic of which is separated into MVC.
+    </br></br>
+- 🎭 ***Actor-driven Reactivity***
+  - Both frontend and backend are handled by microservices - *Actors*: Alloy's custom refabrication of Roblox's `Actor`s. 
+
 # *Introducing*
-## ⚛️ Advanced React-like frontend
+## ⚛️ Reactive Programming: overly customizable React-like approach
 -  Alloy introduces heavily extensible, customizable and replicated state machinery and integrates everything into garbage collection.
   <br>Out of that:<br>
 
@@ -34,6 +46,9 @@
            
     * **Amplifieds can be mounted on instances.**
          > With lifetime functions, signals, specific updates, object pooling, etc.
+
+    * **Encouraging extension.**
+         > Each of the mentioned 3 benefits share one main goal: to **freely allow extension**. Create your own mounting, your own States, objects, pools and more. Suit the framework for your design and needs.
 
 ```luau
 --[[ A Counter textlabel component example ]]
@@ -55,7 +70,7 @@ return function(
 end
 ```
 ## 〽️ Internal serializer
--  Aserde is the Alloy's internal SerDes, optimized for multiple usecases:</br>
+-  Aserde is the Alloy's internal buffer SerDes, optimized for multiple usecases:</br>
 
     * **Shared Amplified intends to give clients optimized state replication**, <br>
       > - so that clients can write their own getters and updaters for it. </br>
