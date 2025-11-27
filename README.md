@@ -28,47 +28,88 @@
 
 ## 🍀 Architectural design patterns
 - 🪟 ***Model-View-Controller***
-  - Alloy induces a MVC pattern with Model divided into Data & Logic and View as Design & State. Utilizing alloy to the full extent implies creating a game with Services, logic of which is separated into MVC.
+  - Alloy induces a MVC pattern with Central Controller, Client Session Controllers and Model for the server; View Actor, Controller Actor(s) for the client.
     </br></br>
 - 🎭 ***Actor-driven Reactivity***
-  - Both frontend and backend are handled by microservices - *Actors*: Alloy's custom refabrication of Roblox's `Actor`s. 
+  - Alloy refabricates Roblox's Actors into a much more controllable representation. Model and View utilize state machinery and communication is represented as a data stream.
 
 # *Introducing*
-## ⚛️ Reactive Programming: overly customizable React-like approach
--  Alloy introduces heavily extensible, customizable and replicated state machinery and integrates everything into garbage collection.
+## ⚛️ Reactive Programming: overly customizable state machinery and observables
+-  Alloy introduces heavily extensible, customizable and replicated state machinery, observable streams and integrates everything into garbage collection.
   <br>Out of that:<br>
 
     * **States can be easily customized.**
          > States have a setter, getter, updater, deleter, connections and can pertain custom attributes in any shape or form.
+         > ***Amplified tables*** are a glorified `table` state with entire multitude of additional customization alongside basic State features.
+         > Amplifieds can be mounted on instances with lifetime functions, signals, specific updates, object pooling, etc.
            
-    * **Amplified table states track all key updates.**
-         > Amplified tables are a glorified `table` state with entire multitude of additional customization alongside basic State features.
-           
-    * **Amplifieds can be mounted on instances.**
-         > With lifetime functions, signals, specific updates, object pooling, etc.
+    * **Representing I/O with observable streams**
+         > Observables are an extension of the standard State, implying that they have the exact same customization functionality.
+         > Operators generate new observables that can be subscribed to.
+         > Subscribers track an observable and have a `unsubscribe`, `delete` and `resubscribe` functionality.
 
     * **Encouraging extension.**
-         > Each of the mentioned 3 benefits share one main goal: to **freely allow extension**. Create your own mounting, your own States, objects, pools and more. Suit the framework for your design and needs.
+         > Each of the mentioned benefits share one main goal: to **freely allow extension**. Create your own mounting, your own States, observables, operators, objects, pools and more. Suit the framework for your design and needs.
 
 ```luau
---[[ A Counter textlabel component example ]]
-local Alloy = require "../Packages/Alloy"
-
-return function(
+--[[ A Counter textbutton example ]]
+local function Counter(
   garbage: Alloy.garbage,
-  count: Alloy.State<number>,
-  
-  props: Alloy.Amplified | {}
 
+  props
 ): Instance
+  local count = garbage:State(0)
 
   return Alloy.New "TextLabel" {
     Text = "Count: " .. count,
+
+    mysignal = Alloy.onEvent "MouseButton1Click" (function()
+      count(count:get() + 1)
+    end),
 
     props
   }
 end
 ```
+
+## 🎭 Model-View-Controller Architecture: via Actors
+-  Alloy induces an MVC architecture approach with a custom refabrication of Actors: recreated for the better of control and opportunity.
+   </br>The game's structure is then as follows:</br>
+
+    * ### **Clientside**
+        * ***View***
+           > Uses a React-like approach with state machinery.
+           
+        * ***Controller***
+           > The clientside controller is adapated to get input from View.
+           > </br>The Controller Actor(s) generates an observable stream through the designated `protocol(s)`.
+
+    * ### **Serverside**
+        * ***Controller***
+          * ***Central Controller***
+             > Central Controller Actor gets traffic from the `protocols` used by clients.
+             > </br>The traffic is routed and forwarded to the Client Session Controller created and designated to handle that client's session.
+             > </br>The Central Controller can control the main game state and communicate with each client's session controllers.
+   
+          * ***Client Session Controllers***
+             > Communicates with children Actors that handle their part of the client's game state. (Separation of Concerns)
+             > </br>Sends traffic back to the clientside controller.
+           
+        * ***Model***
+          * ***Logic***
+             > All serverside logic separated into a single place.
+
+          * ***Data***
+             > The universal source of truth for player data and the game's state.
+
+        * ***View (discouraged)***
+          > Used for serverside rendering and loading of assets.
+
+
+ - Anything out of this __can be customized.__
+   </br> For example, you can divide clientside View into State, Model and Design. You can avoid the client session controllers if your game has less traffic. And much more.
+   
+
 ## 〽️ Internal serializer
 -  Aserde is the Alloy's internal buffer SerDes, optimized for multiple usecases:</br>
 
