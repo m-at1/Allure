@@ -3,8 +3,8 @@
 --stylua: ignore start
 
 --[[type: SerDes]]
-export type SerDes<T> = {
-    Ser: (buff: buffer, index: number, val: T) -> number;
+export type SerDes<T=any> = {
+    Ser: (buff: buffer, index: number, val: T) -> (buffer);
     Des: (buff: buffer, index: number, additional: any?) -> (T, number)
 }
 

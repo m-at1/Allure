@@ -1,33 +1,41 @@
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
+local RunService = game:GetService "RunService"
 print "Hello world, from client!"
 
 local Aserde = require(ReplicatedStorage.Shared.Alloy.Aserde)
-local Alloy = require(ReplicatedStorage.Shared.Alloy)
+--local Alloy = require(ReplicatedStorage.Shared.Alloy)
 
-local a = Aserde.CreateBuffer { 190, 800 }
+local b = Aserde.CreateBuffer { false, 8, -19, 3800 }
 
-print(a)
+print("Created buffer length:", buffer.len(b))
 
-print("Size of the buffer:", buffer.len(a))
+local decoded = Aserde.ReadBuffer(b)
 
-print("Reading:", Aserde.ReadBuffer(a))
+print("Decoded:", decoded)
 
-task.wait(8)
+--[[
+task.wait(13)
+
+print "Started"
+
+local remote = ReplicatedStorage.aserdeTest
+
+local sent = 0
+local a = RunService.RenderStepped:Connect(function(delta: number)
+	--remote:FireServer(Aserde.CreateBuffer(table.create(1000, true)))
+	remote:FireServer(table.create(1000, true))
+	sent += 1000
+end)
+
+task.wait(10)
+
+a:Disconnect()
+
+print("Sent:", sent)]]
 
 -- TODO:
 --[[
-an excellent serializer is already done
-basically can be heavily improved with deduplication
-and finish it with the rest of dataTypes
-
-create a deduplication metadata that defines
-how many next bytes to read for the amount number
-then the actual metadata itself
-and the value itself
-
-this can be optimized though like the metadata value + 100 < 0 then the actual value metadata is value-100 and the 100 implies deduplication (the amount
-number are bytes before value-100 metadata byte)
-or that's worse
+finish the other datatypes
 ]]
 
 --[[
