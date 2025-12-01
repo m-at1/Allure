@@ -5,13 +5,40 @@ print "Hello world, from client!"
 local Aserde = require(ReplicatedStorage.Shared.Alloy.Aserde)
 --local Alloy = require(ReplicatedStorage.Shared.Alloy)
 
-local b = Aserde.CreateBuffer { false, 8, -19, 3800 }
+--local c = Aserde.CreateBuffer
+
+task.wait(10)
+
+print "serializing"
+
+local b = Aserde.CreateBuffer {
+	A = Color3.fromRGB(36, 209, 209),
+	J = { [Aserde.SpecialType] = "C", 288 },
+
+	MyCFrame = CFrame.new(Vector3.new(19.80, 108.92328, 99.0923), Vector3.new(500, 120, 1203)),
+
+	Vector2int16.new(99, 800),
+	test = Vector3int16.new(17800, 28900, 800),
+	mynewTable = { yeah = 1, thisone = { 52, 19, forsomereason = 10, bytheway = 10 } },
+	true,
+	bytheway = 59,
+} --(MergeBuffer(c { a = true, 19, "Hello" }, c { false, "Yeah" })) --{ "Text", a = 1, b = 20, c = 1000, true }
 
 print("Created buffer length:", buffer.len(b))
+
+task.wait(3)
+
+print "deserializing"
 
 local decoded = Aserde.ReadBuffer(b)
 
 print("Decoded:", decoded)
+
+--TODO: rewrite alloy on the new typesolver
+
+--TODO: technically aserde is done. make a cframe ser/des just in case
+--TODO: protocols, shared amplified, 1 remote event for shared amplified, reliable and unreliable for protocols
+--delete Boundary, make a new SharedAmplified and Protocol folders, expose some of Aserde functionality in the alloy table
 
 --[[
 task.wait(13)

@@ -4,8 +4,8 @@
 
 --[[type: SerDes]]
 export type SerDes<T=any> = {
-    Ser: (buff: buffer, index: number, val: T) -> (buffer);
-    Des: (buff: buffer, index: number, additional: any?) -> (T, number)
+    Ser: (buff: buffer, index: number, val: T, ...any?) -> (buffer);
+    Des: (buff: buffer, index: number, ...any?) -> (T, number)
 }
 
 --[[type: Aserde]]

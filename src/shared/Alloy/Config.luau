@@ -1,6 +1,6 @@
 --!strict
 
-return {
+return table.freeze {
 	garbage_recursion_limit = 6,
 
 	ASERDE_YIELD_READ = false,

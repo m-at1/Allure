@@ -3,8 +3,11 @@
 --!optimize 2
 local ATypes = require "./ATypes"
 local ExpandBuffer = require "./ExpandBuffer"
+local MergeBuffer = require "./MergeBuffer"
 
 type SerDes<T> = ATypes.SerDes<T>
+
+local MetaUtils
 
 local function estimate(val)
 	local datatype = "A"
@@ -50,31 +53,55 @@ local function estimate(val)
 	-- string
 	elseif typeof(val) == "string" then
 		datatype = "B"
+
+	--color3
+	elseif typeof(val) == "Color3" then
+		datatype = "N"
+
+	-- table
+	elseif typeof(val) == "table" then
+		datatype = "M"
+
 	-- cframe
 	elseif typeof(val) == "CFrame" then
-		--..
-		-- vector3
-	elseif typeof(val) == "Vector3" then
-		--..
-		-- color3
-	elseif typeof(val) == "Color3" then
-		--..
+		datatype = "S"
 
-		-- custom
-	elseif typeof(val) == "table" then
-		--..
+	--vector3
+	elseif typeof(val) == "Vector3" then
+		datatype = "O"
+
+	--vector3int16
+	elseif typeof(val) == "Vector3int16" then
+		datatype = "P"
+
+	--vector2
+	elseif typeof(val) == "Vector2" then
+		datatype = "Q"
+
+	--vector2int16
+	elseif typeof(val) == "Vector2int16" then
+		datatype = "R"
 	end
 
 	return datatype
 end
 
-return {
+MetaUtils = {
+	SpecialType = { __specialtype = 1 },
+	handleSpecialType = function(val: any, datatype: any)
+		if typeof(val) == "table" and val[MetaUtils.SpecialType] then
+			datatype = val[MetaUtils.SpecialType :: any]
+			val = val[1]
+		end
+		return val, datatype
+	end,
 	NextIndex = function(buff: buffer, index: number)
 		if index >= buffer.len(buff) - 1 then
 			return ExpandBuffer(buff, index + 1), index
 		end
 		return buff, index
 	end,
+	Merge = MergeBuffer,
 	Estimate = estimate,
 	EstimateLength = function(val: any)
 		return ({
@@ -115,3 +142,5 @@ return {
 		})[datat]
 	end,
 }
+
+return MetaUtils

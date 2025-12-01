@@ -2,92 +2,56 @@
 --!optimize 2
 
 local ALog = require "@self/ALog"
-local ATypes = require "@self/ATypes"
-local DataTypes = require "@self/DataTypes"
-local ExpandBuffer = require "@self/ExpandBuffer"
+local MetaUtils = require "@self/MetaUtils"
 
 local Metadata = require "@self/Metadata"
 local Config = require "./Config"
 
--- THE GOAL:
 --[[
-    Effectively serialize in an optimized and quick way
-    When shared amplifieds update, only serialize and send what's changed
-]]
 
---[[
-Data types {{
-    - number
-    - string
-    - bool
-    
-    - Color3
-    - Vector3
-    - Vector3int16
-}}
+Metadata and types
 
-Metadata content {{
-    format: int8
+	A = nil	(metabyte only)
+    B = string
 
-    [>0] = string   >0	
+    C = uint8
+    D = uint16
+    E = uint32
 
-    [-11] = uint8    1
-    [-12] = uint16   2
-    [-13] = uint32   4
+    F = int8
+    G = int16
+    H = int32
 
-    [-21] = int8     1
-    [-22] = int16    2
-    [-23] = int32    4
+    I = f32
+    J = f64
 
-    [-31] = f32      4
-    [-32] = f64      8
+	K = true    (metabyte only)
+    L = false   (metabyte only)
 
-    [-51] = Color3   (int8 int8 int8)    3
-    [-52] = Vector3  (int8 int8 int8)    3
-    [-53] = Vector3int16 (int16 int16 int16)     6
+	M = dict/array table
 
-    [-100] = true    0   (metadata only)
-    [-101] = false   0   (metadata only)
-}}
+    N = Color3
+    O = Vector3
+    P = Vector3int16
 
-New Metadata content {{
-    format: string char
+	Q = Vector2
+	R = Vector2int16
 
-	A = array	 0	_
-	B_ = string	 1	_
-
-    C = uint8    0	1
-    D = uint16   0	2
-    E = uint32   0	4
-
-    F = int8     0	1
-    G = int16    0	2
-    H = int32    0	4
-
-    I = f32      0	4
-    J = f64      0	8
-
-    K = true    -1	1   (metadata only)
-    L = false   -1	1   (metadata only)
-
-	M = Color3 (int8 int8 int8)    		 0 3
-    N = Vector3 (int8 int8 int8)  		 0 3
-    O = Vector3int16 (int16 int16 int16) 0 6
-
-	+_- = the next _uint8 are -any		2 _?	(shortcuts both metadata and data)
-
-}}
+	S = CFrame (Lossless)
 
 ]]
+local Aserde
 
-return {
+Aserde = table.freeze {
+	SpecialType = MetaUtils.SpecialType,
 	ReadBuffer = function(buff: buffer)
 		if not buff then
 			ALog.logError("noValues", "Aserde.ReadBuffer")
 		end
 		local len = buffer.len(buff)
 		if len < 1 then
-			ALog.logError("emptyBuffer", "Aserde.ReadBuffer")
+			return {}
+			--ALog.logError("emptyBuffer", "Aserde.ReadBuffer")
 		end
 
 		local res = {}
@@ -115,13 +79,14 @@ return {
 				break
 			end
 
-			warn "reading"
+			--warn "reading"
 
 			if buffer.readstring(buff, index, 1) == "+" then
 				--next byte: type of amount
 				index += 1
 				local amountbyte, i = Metadata.Read(buff, index)
-				local a, j = amountbyte.Des(buff, i)
+
+				local a, j = amountbyte.Des(buff, i, Aserde.ReadBuffer, Aserde.CreateBuffer)
 				amount = a
 				index = j
 				-- next byte: the value type thats being repeated
@@ -135,13 +100,33 @@ return {
 			end
 
 			for i = 1, amount do
-				warn(amount)
+				--warn(amount)
 				if Config.ASERDE_YIELD_READ then
 					task.wait()
 				end
-				local decoded, j = metabyte.Des(buff, index)
+
+				local key = nil
+
+				if index < buffer.len(buff) - 1 and buffer.readstring(buff, index, 1) == "\\" then
+					--1: type of key
+					index += 1
+					local amountbyte, m = Metadata.Read(buff, index)
+
+					--2: key
+					local a, j = amountbyte.Des(buff, m, Aserde.ReadBuffer, Aserde.CreateBuffer)
+					key = a
+					index = j
+					-- next byte: the value type thats being repeated
+				end
+
+				local decoded, j = metabyte.Des(buff, index, Aserde.ReadBuffer, Aserde.CreateBuffer)
 				index = j
-				table.insert(res, decoded)
+
+				if key then
+					res[key] = decoded
+				else
+					table.insert(res, decoded)
+				end
 			end
 
 			if index >= buffer.len(buff) then
@@ -149,23 +134,9 @@ return {
 			end
 		end
 
-		--[[print(metadata)
-
-		for _, a in metadata do
-			local val, j = a[1].Des(buff, index, a[3])
-
-			--warn(val)
-			for i = 1, amounts[index] do
-				table.insert(res, val)
-			end
-			index = j
-
-			task.wait()
-		end]]
-
-		return #res > 1 and res or res[1]
+		return res
 	end,
-	CreateBuffer = function(values: {})
+	CreateBuffer = function(values: { [any]: any })
 		--CREATE METADATA
 
 		--local metadatalength = 0
@@ -174,161 +145,106 @@ return {
 		--
 		local amounts = {} :: { [any]: { any } } --typeof(val) = {{vals}, amount}
 
-		for _, val in values do
-			--[[if not amounts[val] then
-				--totalbufferlength += Metadata.EstimateLength(val)
-				if typeof(val) == "string" then
-					metadatalength += 1
-				end
-			end]]
-
+		for k, val in values do
 			local datat = Metadata.Estimate(val)
 
 			amounts[datat] = amounts[datat] or { 0, {} }
 			amounts[datat][1] += 1
-			table.insert(amounts[datat][2], val)
+			if k then
+				amounts[datat][2][k] = val
+			else
+				table.insert(amounts[datat][2], val)
+			end
 		end
 
 		local data = buffer.create(1)
 		local index = 0
 
-		print(amounts)
+		--print(amounts)
 
 		for datat, am in amounts do
-			if am[1] > 1 then
-				print "yes"
-				data = ExpandBuffer(data, index)
+			if am[1] > 3 then
+				data = MetaUtils.NextIndex(data, index)
 				buffer.writestring(data, index, "+")
 				index += 1
 
-				--write amount type and amount
-				local c, i = Metadata.Write(data, index, am[1])
+				--[[write amount type and amount
+				local c, i, r = Metadata.Write(data, index, am[1])
+				data = r
 				data, index = c.Ser(data, i, am[1])
 
-				local b, j = Metadata.Write(data, index, am[2][1])
-				index = j
+				local b, j, m = Metadata.Write(data, index, am[2][1])
+				data = m
+				index = j]]
 
-				for k = 1, am[1] do
+				local b = nil
+
+				for k, v in am[2] do
+					--write amount type and amount
+					local c, i, r = Metadata.Write(data, index, am[1])
+					data = r
+					data, index = c.Ser(data, i, am[1], Aserde.ReadBuffer, Aserde.CreateBuffer)
+
+					b, index, data = Metadata.Write(data, index, v)
+
+					break
+				end
+
+				--[[for k = 1, am[1] do
 					data, index = b.Ser(data, index, am[2][k])
+				end]]
+				for k, v in am[2] do
+					--code the key
+					if typeof(k) ~= "number" then
+						--1: \
+						data = MetaUtils.NextIndex(data, index)
+						buffer.writestring(data, index, "\\")
+						index += 1
+						--2: key type
+						local serde, newi, newdata = Metadata.Write(data, index, k)
+						--3: key
+						k = MetaUtils.handleSpecialType(k)
+						data, index = serde.Ser(newdata, newi, k, Aserde.ReadBuffer, Aserde.CreateBuffer)
+					end
+					v = MetaUtils.handleSpecialType(v)
+					data, index = b.Ser(data, index, v, Aserde.ReadBuffer, Aserde.CreateBuffer)
 				end
 			else
-				local a, j, c = Metadata.Write(data, index, am[2][1])
-				warn(a, j, c)
-				data = c
-				print(j)
-				data, index = a.Ser(data, j, am[2][1])
-				print(index)
-			end
-			warn(index)
-			--warn(index)
-			--local a, i = Metadata.Write(data, index, val)
-			--index = a.Ser(data, index, val)
-		end
+				for k, v in am[2] do
+					local a, j, c = Metadata.Write(data, index, v)
 
-		print(buffer.len(data))
+					data = c
+					index = j
 
-		--warn(amounts)
+					--code the key
 
-		--local sers = {}
-		--local index = 0
+					if typeof(k) ~= "number" then
+						--1: \
+						data = MetaUtils.NextIndex(data, index)
+						buffer.writestring(data, index, "\\")
+						index += 1
+						--2: key type
+						local serde, newi, newdata = Metadata.Write(data, index, k)
+						--3: key
+						k = MetaUtils.handleSpecialType(k)
+						data, index = serde.Ser(newdata, newi, k, Aserde.ReadBuffer, Aserde.CreateBuffer)
+					end
 
-		--[[for datat, am in amounts do
-			local ser_bytes = datat == "B"
-					and (function()
-						local a = #am[2]
+					v = MetaUtils.handleSpecialType(v)
+					data, index = a.Ser(data, index, v, Aserde.ReadBuffer, Aserde.CreateBuffer)
 
-						for _, st in am[2] do
-							a += #st
-						end
-
-						return a
-					end)()
-				or Metadata.EstimateLengthDataType(datat) * am[1]
-			warn(ser_bytes)
-			totalbufferlength += 1 + ser_bytes + (am[1] > 1 and 2 + Metadata.EstimateLength(am[1]) or 0)
-			-- true true true true true --> +C5K
-			-- true false false true true --> KLLKK
-
-			-- metabyte + ser_bytes + (amount ? metabyte+number_ser_bytes : 0)
-		end
-
-		warn(totalbufferlength)]]
-
-		--local metabuffer = buffer.create(metadatalength)
-
-		--[[local amounts2 = table.clone(amounts)
-		for j, val in values do
-			local datat = Metadata.Estimate(val)
-
-			if amounts2[datat] > 1 then
-				buffer.writestring(metabuffer, index, "+")
-				local amounttype = Metadata.Estimate(amounts2[datat])
-				warn("Type:", amounttype)
-				index += 1
-
-				-- type of the amount
-				buffer.writestring(metabuffer, index, amounttype)
-				index += 1
-
-				-- the amount
-				index = DataTypes[Metadata.Estimate(amounts2[datat])].Ser(metabuffer, index)
-			end
-
-			-- the value
-			local ser, i = Metadata.Write(metabuffer, index, val)
-			sers[j] = ser
-
-			amounts2[datat] = nil
-
-			index = i
-		end]]
-
-		--[[ FILL DATA
-
-		local data = buffer.create(totalbufferlength)
-		local index = 0
-
-		--print(totalbufferlength)
-
-		warn(amounts)
-
-		for datat, am in amounts do
-			--for _, val in values do
-			if am[1] > 1 then
-				--local datat = Metadata.Estimate(val)
-				--local a
-
-				--if amounts[datat] and amounts[datat][1] > 1 then -- if its the first value in a row of this type
-				--local am = amounts[datat]
-				buffer.writestring(data, index, "+")
-				index += 1
-
-				--write amount type and amount
-				local c, i = Metadata.Write(data, index, am[1])
-				index = c.Ser(data, i, am[1])
-
-				local b, j = Metadata.Write(data, index, am[2][1])
-				index = j
-
-				for k = 1, am[1] do
-					index = b.Ser(data, index, am[2][k])
+					--break
 				end
-			else
-				local a, j = Metadata.Write(data, index, am[2][1])
-				index = a.Ser(data, j, am[2][1])
 			end
 			--warn(index)
 			--local a, i = Metadata.Write(data, index, val)
 			--index = a.Ser(data, index, val)
 		end
 
-		--[[ merge results
-		local result = buffer.create(metadatalength + totalbufferlength + 1)
-
-		buffer.writeu8(result, 0, metadatalength)
-		buffer.copy(result, 1, metabuffer)
-		buffer.copy(result, 1 + metadatalength, data)]]
+		--print(buffer.len(data))
 
 		return data
 	end,
 }
+
+return Aserde
