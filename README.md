@@ -16,7 +16,7 @@
 ‎‎‎‎‎‎‎‎
 <div align="center">
 
-  ### Feature Matrix
+### Feature Matrix
 
 | Feature / Paradigm / Framework | *Alloy* | Fusion | Vide | Blend | React + Rodux/Charm | Knit + Comm |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -35,10 +35,21 @@
 > [!IMPORTANT]
 > <div align="center"> 
 >
-> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate package setups" or provide an all-in-one solution, no. The entire purpose of Alloy is to closely tie together without any problems of integration whatever I use the most -- UI, MVC and network. That's it. It's not made to provide you a Signal or a Datastore lib. Those are not the goal of the project -- just connect them with Alloy or anything else yourself.*
+> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate package setups" or provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
 > 
 > </div>
 
+### ➕ Key Benefits
+
+- 💯 ***Holistic: Seamlessly integrated ecosystem***
+    - Connect replication, garbage collection, state machinery and structure your game with Model-Controller-View and Actors all with zero effort and boilerplate.
+
+- 🎨 ***Customizable: Provides multiple tools to suit the framework for you***
+    - Design your own States, objects, mounting, syntax, replication rules and more.
+    - Create custom components for reuse: exponentiate the speed of game development.
+
+- 📈 ***Responsible: An optimized approach to control the entire structure.***
+    - Alloy manages the entire game for you: Efficiently serializes replicated data, forces ratelimiting and guarding, provides best practices in very simple terms.
 
 ---
 
@@ -48,7 +59,9 @@
 > There are several instances of unfinished documentation, code, and issues.
 
 ### Contents
-- Architectural design patterns
+- Feature Matrix
+- Key benefits
+- Architectural design patterns   *(HERE)*
 - Introducing
 - License
 
@@ -57,7 +70,7 @@
   - Alloy induces a MVC pattern with Central Controller, Client Session Controllers and Model for the server; View Actor, Controller Actor(s) for the client.
     </br></br>
 - 🎭 ***Actor-driven Reactivity***
-  - Alloy refabricates Roblox's Actors into a much more controllable representation. Model and View utilize state machinery and communication is represented as a data stream.
+  - Alloy refabricates Roblox's Actors into a much more controllable representation. Model and View utilize state machinery and communication is represented as a strictly controlled data stream.
 
 # *Introducing*
 ## ⚛️ Reactive Programming: overly customizable state machinery and observables
