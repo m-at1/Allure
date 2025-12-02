@@ -35,7 +35,7 @@
 > [!IMPORTANT]
 > <div align="center"> 
 >
-> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate package setups" or provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
+> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate multi-package workflows" or to provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
 > 
 > </div>
 
