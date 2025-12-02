@@ -18,20 +18,29 @@
 
   ### Feature Matrix
 
-| Feature / Paradigm / Architecture | *Alloy* | Fusion | Vide | Blend | React + Rodux/Charm | Knit + Comm |
+| Feature / Paradigm / Framework | *Alloy* | Fusion | Vide | Blend | React + Rodux/Charm | Knit + Comm |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| State Machinery (ISM) | ✅</br>Customizable | ✅</br>Main principle | ✅</br>Sources | ❌</br>Requires a tool | ✅</br>Rodux / Charm | ❌</br>Not purposed / Requires a tool |
-| Garbage Collection | ✅</br>Forced / Integrated | ✅</br>Optional | ❌</br>Not present | ❌</br>Requires a tool | ❌</br>Requires a tool | ❌</br>Not purposed / Requires a tool |
-| UI Framework | ✅</br>Present | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>React | ❌</br>Not purposed / Requires a tool |
-| Replicated States | ✅</br>Shared Amplified | ❌</br>Not present | ❌</br>Not present | ❌</br>Requires a tool | ❌</br>Requires a tool | ✅</br>Charm | ❌</br>Not present |
-| Network Middleware | ✅</br>Protocols | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Requires a tool | ❌</br>Requires a tool | ✅</br>Charm | ❌</br>Not present |
-| Architecture (MVC) | ✅</br>Forced / Integrated | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ✅</br>Main purpose |
-| Garbage Collection | A | F | v | B | R+R | K + C |
-| Garbage Collection | A | F | v | B | R+R | K + C |
+| *State Machinery (ISM)* | ✅</br>Customizable | ✅</br>Main principle | ✅</br>Sources | ❌</br>Requires a tool | ✅</br>Rodux / Charm | ❌</br>Not purposed / Requires a tool |
+| *Garbage Collection* | ✅</br>Forced / Integrated | ✅</br>Optional | ❌</br>Not present | 🟨</br>Easily integrated with Maid | ❌</br>Requires a tool | ❌</br>Not purposed / Requires a tool |
+| *UI Framework* | ✅</br>Present | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>React | ❌</br>Not purposed / Requires a tool |
+| *Desynchronization (Actors)* | ✅</br>Integrated | ❌</br>Requires a tool | ❌</br>Requires a tool | 🟨</br>Promises | ❌</br>Requires a tool | 🟨</br>Promises |
+| *Architecture (MVC)* | ✅</br>Forced / Integrated | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ✅</br>Similar, Main purpose |
+| *Replicated States* | ✅</br>Shared Amplified | ❌</br>Not present | ❌</br>Not present | ❌</br>Not present | ✅</br>Charm | ❌</br>Not present |
+| *Network Middleware* | ✅</br>Protocols | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Requires a tool | ✅</br>Comm |
+
+</br>
 
 </div>
 
-</br>
+> [!IMPORTANT]
+> <div align="center"> 
+>
+> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate package setups" or provide an all-in-one solution, no. The entire purpose of Alloy is to closely tie together without any problems of integration whatever I use the most -- UI, MVC and network. That's it. It's not made to provide you a Signal or a Datastore lib. Those are not the goal of the project -- just connect them with Alloy or anything else yourself.*
+> 
+> </div>
+
+
+---
 
 > [!NOTE]
 > ### *Alloy is a fresh project*
