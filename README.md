@@ -35,14 +35,14 @@
 > [!IMPORTANT]
 > <div align="center"> 
 >
-> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate multi-package workflows" or to provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
+> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate multi-package workflows" or to provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, states, streams, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
 > 
 > </div>
 
 ### ➕ Key Benefits
 
 - 💯 ***Holistic: Seamlessly integrated ecosystem***
-    - Connect replication, garbage collection, state machinery and structure your game with Model-Controller-View and Actors all with zero effort and boilerplate.
+    - Connect replication, garbage collection, state machinery and structure your game with Model-View-Controller and Actors all with zero effort and boilerplate.
 
 - 🎨 ***Customizable: Provides multiple tools to suit the framework for you***
     - Design your own States, objects, mounting, syntax, replication rules and more.
