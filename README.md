@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <i>Reactive Meta-framework for the Roblox Metaverse.</i>
+  <i>Reactive Holistic Meta-framework for the Roblox Metaverse.</i>
 </p>
 
 <h1></h1>
@@ -13,7 +13,24 @@
   <a href="https://github.com/m-at1/Alloy/releases"><img width="160" height="50" src="./images/Docs.png" alt="Docs"></a>ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ
   <a href="https://github.com/m-at1/Alloy/releases"><img width="130" height="50" src="./images/Benchmarks.png" alt="Benchmarks"></a>
 </div>
-‎‎‎‎‎‎‎‎ㅤ
+‎‎‎‎‎‎‎‎
+<div align="center">
+
+  ### Feature Matrix
+
+| Feature / Paradigm / Architecture | *Alloy* | Fusion | Vide | Blend | React + Rodux/Charm | Knit + Comm |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| State Machinery (ISM) | ✅</br>Customizable | ✅</br>Main principle | ✅</br>Sources | ❌</br>Requires a tool | ✅</br>Rodux / Charm | ❌</br>Not purposed / Requires a tool |
+| Garbage Collection | ✅</br>Forced / Integrated | ✅</br>Optional | ❌</br>Not present | ❌</br>Requires a tool | ❌</br>Requires a tool | ❌</br>Not purposed / Requires a tool |
+| UI Framework | ✅</br>Present | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>React | ❌</br>Not purposed / Requires a tool |
+| Replicated States | ✅</br>Shared Amplified | ❌</br>Not present | ❌</br>Not present | ❌</br>Requires a tool | ❌</br>Requires a tool | ✅</br>Charm | ❌</br>Not present |
+| Network Middleware | ✅</br>Protocols | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Requires a tool | ❌</br>Requires a tool | ✅</br>Charm | ❌</br>Not present |
+| Architecture (MVC) | ✅</br>Forced / Integrated | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ✅</br>Main purpose |
+| Garbage Collection | A | F | v | B | R+R | K + C |
+| Garbage Collection | A | F | v | B | R+R | K + C |
+
+</div>
+
 </br>
 
 > [!NOTE]
