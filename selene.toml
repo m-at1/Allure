@@ -1,7 +1,0 @@
-std = "roblox"
-
-base: "roblox"
-globals:
-  require:
-    args:
-      - type: any

@@ -1,25 +1,5 @@
 {
   "name": "Alloy",
   "tree": {
-    "$className": "DataModel",
-
-    "ReplicatedStorage": {
-      "Shared": {
-        "$className": "Folder",
-        "Alloy": {
-          "$path": "Alloy/src"
-        }
-      }
-    },
-
-    "StarterPlayer": {
-      "StarterPlayerScripts": {
-        "AlloyTest": {
-          "$path": "AlloyTest.client.luau"
-        }
-      }
-    }
-
-    
-  }
-}
+    "$path": "src"
+}}
