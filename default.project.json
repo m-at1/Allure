@@ -5,26 +5,17 @@
 
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "src/shared"
-      },
-      "Packages": {
-        "$path": "Packages"
-      }
-    },
-
-    "ServerScriptService": {
-      "Server": {
-        "$path": "src/server"
-      },
-      "ServerPackages": {
-        "$path": "ServerPackages"
+        "$className": "Folder",
+        "Alloy": {
+          "$path": "Alloy/src"
+        }
       }
     },
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "Client": {
-          "$path": "src/client"
+        "AlloyTest": {
+          "$path": "AlloyTest.client.luau"
         }
       }
     }
