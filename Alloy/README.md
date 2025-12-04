@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <i>Reactive Meta-framework for the Roblox Metaverse.</i>
+  <i>Reactive Holistic Meta-framework for the Roblox Metaverse.</i>
 </p>
 
 <h1></h1>
@@ -13,8 +13,45 @@
   <a href="https://github.com/m-at1/Alloy/releases"><img width="160" height="50" src="./images/Docs.png" alt="Docs"></a>ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ
   <a href="https://github.com/m-at1/Alloy/releases"><img width="130" height="50" src="./images/Benchmarks.png" alt="Benchmarks"></a>
 </div>
-‎‎‎‎‎‎‎‎ㅤ
+‎‎‎‎‎‎‎‎
+<div align="center">
+
+### Feature Matrix
+
+| Feature / Paradigm / Framework | *Alloy* | Fusion | Vide | Blend | React + Rodux/Charm | Knit + Comm |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| *State Machinery (ISM)* | ✅</br>Customizable | ✅</br>Main principle | ✅</br>Sources | ❌</br>Requires a tool | ✅</br>Rodux / Charm | ❌</br>Not purposed / Requires a tool |
+| *Garbage Collection* | ✅</br>Forced / Integrated | ✅</br>Optional | ❌</br>Not present | 🟨</br>Easily integrated with Maid | ❌</br>Requires a tool | ❌</br>Not purposed / Requires a tool |
+| *UI Framework* | ✅</br>Present | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>React | ❌</br>Not purposed / Requires a tool |
+| *Desynchronization (Actors)* | ✅</br>Integrated | ❌</br>Requires a tool | ❌</br>Requires a tool | 🟨</br>Promises | ❌</br>Requires a tool | 🟨</br>Promises |
+| *Architecture (MVC)* | ✅</br>Forced / Integrated | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ✅</br>Similar, Main purpose |
+| *Replicated States* | ✅</br>Shared Amplified | ❌</br>Not present | ❌</br>Not present | ❌</br>Not present | ✅</br>Charm | ❌</br>Not present |
+| *Network Middleware* | ✅</br>Protocols | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Requires a tool | ✅</br>Comm |
+
 </br>
+
+</div>
+
+> [!IMPORTANT]
+> <div align="center"> 
+>
+> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate multi-package workflows" or to provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, states, streams, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
+> 
+> </div>
+
+### ➕ Key Benefits
+
+- 💯 ***Holistic: Seamlessly integrated ecosystem***
+    - Connect replication, garbage collection, state machinery and structure your game with Model-View-Controller and Actors all with zero effort and boilerplate.
+
+- 🎨 ***Customizable: Provides multiple tools to suit the framework for you***
+    - Design your own States, objects, mounting, syntax, replication rules and more.
+    - Create custom components for reuse: exponentiate the speed of game development.
+
+- 📈 ***Responsible: An optimized approach to control the entire structure.***
+    - Alloy manages the entire game for you: Efficiently serializes replicated data, forces ratelimiting and guarding, provides best practices in very simple terms.
+
+---
 
 > [!NOTE]
 > ### *Alloy is a fresh project*
@@ -22,7 +59,9 @@
 > There are several instances of unfinished documentation, code, and issues.
 
 ### Contents
-- Architectural design patterns
+- Feature Matrix
+- Key benefits
+- Architectural design patterns   *(HERE)*
 - Introducing
 - License
 
@@ -31,7 +70,7 @@
   - Alloy induces a MVC pattern with Central Controller, Client Session Controllers and Model for the server; View Actor, Controller Actor(s) for the client.
     </br></br>
 - 🎭 ***Actor-driven Reactivity***
-  - Alloy refabricates Roblox's Actors into a much more controllable representation. Model and View utilize state machinery and communication is represented as a data stream.
+  - Alloy refabricates Roblox's Actors into a much more controllable representation. Model and View utilize state machinery and communication is represented as a strictly controlled data stream.
 
 # *Introducing*
 ## ⚛️ Reactive Programming: overly customizable state machinery and observables
