@@ -18,7 +18,7 @@ local errors = {
 return {
 	logError = function(errorid: string, ...: string)
 		--local stack = debug.traceback("\n\\\\\\--------- \tStack Traceback\t ---------///", 2)
-		error(prefix .. string.format(errors[errorid], ...) .. "\n\t\t\tError id: " .. errorid, 0)
+		error(prefix .. string.format(errors[errorid] :: any, ...) .. "\n\t\t\tError id: " .. errorid, 0)
 	end,
 
 	logWarning = function(errorid: string, ...: string)
@@ -26,7 +26,7 @@ return {
 			debug.traceback("\n\n\\\\\\\t---------\t--------- \t\t\tStack Traceback\t\t\t ---------\t---------\t///", 2)
 		warn(
 			prefix
-				.. string.format(errors[errorid], ...)
+				.. string.format(errors[errorid] :: any, ...)
 				.. "\n\t\t\tError id: "
 				.. errorid
 				.. if stack then stack else ""

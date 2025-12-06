@@ -4,13 +4,13 @@ local main = script.Parent.Parent
 local Types = require(main.Types)
 
 return (
-	function(trash: any, fn: (with: (...any) -> (), innertrash: Types.garbage) -> ()): any
+	function(trash: any, fn: (with: (...any) -> ...any, innertrash: Types.garbage) -> ()): any
         --stylua: ignore
 		local computed = trash
 			:State()
 			:setter(nil)
 			:custom "_trash" (trash:garbage() :: Types.Callable)
-			:custom "connectedvalues"({}) --{[stateobject]: any?}
+			:custom "connectedvalues"({} :: {[Types.StateObject<any>]: any}) --{[stateobject]: any?}
 			:getter(function(self)
 				if self.__value == nil then
 					self.__value = fn(function(...: any)
@@ -32,7 +32,7 @@ return (
 					return self.__value
 				end
 
-				for state: Types.StateObject<unknown>, value in self.connectedvalues do
+				for state, value in self.connectedvalues do
 					if value ~= state:get() then
 						--update values
 						for st, _ in self.connectedvalues do
@@ -40,7 +40,7 @@ return (
 						end
 
 						--update value
-						getmetatable(self._trash).__call()
+						getmetatable(self._trash :: any).__call()
 
 						self.__value = fn(function(...)
 							local values = {}
@@ -64,5 +64,5 @@ return (
 	end :: any
 ) :: (
 	trash: Types.garbage<Types.Alloy & {} & any>,
-	fn: (with: (...any) -> (), innertrash: Types.garbage) -> ()
+	fn: (with: (...any) -> ...any, innertrash: Types.garbage) -> ()
 ) -> Types.StateObject<nil>

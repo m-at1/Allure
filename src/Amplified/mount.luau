@@ -10,7 +10,7 @@ return (
 		object: Instance,
 		amplified: Types.Amplified<unknown>,
 		fn: nil | (self: any, object: Instance) -> ...any,
-		lifetime: nil | (self: any, object: Instance) -> ...any
+		lifetime: nil | (self: Types.Amplified<unknown>, object: Instance) -> ...any
 	): any
 		-- FORMAT:
 		-- garbage:mount(frame, Amplify {
@@ -50,14 +50,14 @@ return (
 			coroutine.resume(asyncLifetime)
 		end
 
-		table.insert(garbage, {
+		table.insert(garbage :: { Types.Amplified<unknown> }, {
 			__deleter = function()
 				print "mounted object deletion"
 				if asyncLifetime then
 					coroutine.close(asyncLifetime)
 				end
-				object:Destroy()
-				amplified:connect(up)(nil)
+				object:Destroy();
+				(amplified :: any):connect(up)(nil) --horrid
 			end,
 		})
 
@@ -65,7 +65,7 @@ return (
 
 		local donevalue = {} --copy of __value except for the handled cases
 
-		amplified:connect(up)(function(_, k, v)
+		(amplified :: any):connect(up)(function(_, k: any, v: any)
 			--warn(k, v)
 
 			-- case 1: check for the previous value

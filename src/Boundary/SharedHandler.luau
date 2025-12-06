@@ -5,7 +5,7 @@ local Log = require "../Log"
 local Garbage = require "../State/Garbage"
 local Types = require "../Types"
 local deepMerge = require "../deepMerge"
-local Sera = require "./Sera"
+--local Sera = require "./Sera"
 
 local SharedReq = script.Parent.SharedReq
 
@@ -40,71 +40,13 @@ local Shared = (function()
 	self.__replications = {} :: { [Player]: Types.Amplified<unknown, unknown> }
 
 	local function generateSchema(values)
-		local schema = {} :: { [string]: Sera.SeraType }
+		--local schema = {} :: { [string]: Sera.SeraType }
 
 		-- generate schema based on best recommendations
-		for key, val in pairs(values) do
-			if typeof(val) == "boolean" then
-				schema[tostring(key)] = Sera.Boolean
 
-			-- number
-			elseif typeof(val) == "number" then
-				-- integer
-				if val % 1 == 0 then
-					-- unsigned integer
-					if val >= 0 then
-						if val < 2 ^ 8 then
-							schema[tostring(key)] = Sera.Uint8
-						elseif val < 2 ^ 16 then
-							schema[tostring(key)] = Sera.Uint16
-						elseif val < 2 ^ 32 then
-							schema[tostring(key)] = Sera.Uint32
-						end
-
-					-- signed integer
-					else
-						if -val <= (2 ^ 8) / 2 then
-							schema[tostring(key)] = Sera.Int8
-						elseif -val <= (2 ^ 16) / 2 then
-							schema[tostring(key)] = Sera.Int16
-						elseif -val <= (2 ^ 32) / 2 then
-							schema[tostring(key)] = Sera.Int32
-						end
-					end
-
-				-- float
-				else
-					-- safe zone
-					if 10 ^ -70 < val and val < 10 ^ 70 then
-						schema[tostring(key)] = Sera.Float32
-					else
-						schema[tostring(key)] = Sera.Float64
-					end
-				end
-			-- string
-			elseif typeof(val) == "string" then
-				schema[tostring(key)] = Sera.String16
-			-- cframe
-			elseif typeof(val) == "CFrame" then
-				schema[tostring(key)] = Sera.CFrame
-			-- vector3
-			elseif typeof(val) == "Vector3" then
-				schema[tostring(key)] = Sera.Vector3
-			-- color3
-			elseif typeof(val) == "Color3" then
-				schema[tostring(key)] = Sera.Color3
-
-			-- custom
-			elseif typeof(val) == "table" then
-				schema[tostring(key)] = val[1]
-			end
-		end
-
-		return schema
+		--tests:
+		--print(generateSchema { myval = 1, haaha = -999 })
 	end
-
-	--tests:
-	--print(generateSchema { myval = 1, haaha = -999 })
 
 	function self:All(values: {})
 		--...

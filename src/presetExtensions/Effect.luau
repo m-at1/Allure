@@ -15,10 +15,10 @@ return (
 				return self.__value
 			end)
 
-		local stateValues = function(...)
+		local stateValues = function(...: Types.StateObject<any> | any)
 			local values = {}
 			for _, v in pairs { ... } do
-				values[#values + 1] = if v.get ~= nil then v:get() else v
+				values[#values + 1] = if v.get ~= nil then (v :: Types.StateObject<any>):get() else v
 			end
 			return table.unpack(values)
 		end
@@ -38,13 +38,13 @@ return (
 					continue
 				end
 				state:connect(updatefn)(updatefn)
-				table.insert(effect._states, state)
+				table.insert(effect._states :: any, state :: any) --horrid
 			end
 
 			return stateValues(...)
 		end, effect._trash)
 
-		return effect:deleter(function(self)
+		return effect:deleter(function(self: Types.StateObject<any> & { _states: any })
 			for _, state in self._states do
 				state:connect(updatefn)(nil)
 			end
