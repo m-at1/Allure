@@ -4,8 +4,6 @@ local Amplified = require "../Amplified/Amplified"
 local Log = require "../Log"
 local Garbage = require "../State/Garbage"
 local Types = require "../Types"
-local deepMerge = require "../deepMerge"
---local Sera = require "./Sera"
 
 local SharedReq = script.Parent.SharedReq
 
@@ -22,10 +20,7 @@ if this script is ran on the server, dont connect
 else, connect to sharedReq, deserialize buffer and detect changes
 (amplified keys can be strings from 1-15 letters and numbers from 0 to 255)
 
-if this script is ran on the server, then return ABSTRACTED UNREADABLE IN CODE API To modify the shared amplified
-DO NOT COMMIT UNABSTRACTED CODE SESSIONS. KEEP AN UNTRACKED FILE WITH UNABSTRACTED CODE.
-
-actually why abstract if its server-only networks
+EDIT: for shared amplified you need observables and protocols
 ]]
 
 local _ISSERVER = RunService:IsServer()

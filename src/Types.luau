@@ -3,6 +3,7 @@
 --stylua: ignore start
 
 --[[ @section util ]]
+
 export type Callable = (...any?) -> (...any?) | typeof(setmetatable({}, {} :: {__call: (...any?) -> (...any?)}))
 
 export type SpecialValue<K, P> = {["__kind"]: K} & P
@@ -157,35 +158,35 @@ export type Amplified<T, V={}> = typeof(
 	
 	__customs: {[any]: any?},
 	connections: { 
-		[any]: (self: Amplified<unknown>, k: any, v: any) -> ...any? 
+		[any]: (self: Amplified<T, V>, k: any, v: any) -> ...any? 
 	},
 	
 	getter:  (
-		self: State<T, V>, (self: State<T, V>) -> T 
-	) -> State<T, V>,
+		self: Amplified<T, V>, (self: Amplified<T, V>) -> T 
+	) ->Amplified<T, V>,
 
 	setter:  ( 
-		self: State<T, V>, 
-		nil | (self: State<T, V>, T) -> ...any?
-	) -> State<T, V>,
+		self: Amplified<T, V>, 
+		nil | (self: Amplified<T, V>, T) -> ...any?
+	) -> Amplified<T, V>,
 	
 	updater: (
-		self: State<T, V>, 
-		(self: State<T, V>, fn2: (any) -> ...any? ) -> any?
-	) -> State<T, V>,
+		self: Amplified<T, V>, 
+		(self: Amplified<T, V>, fn2: (any) -> ...any? ) -> any?
+	) -> Amplified<T, V>,
 
 	deleter: (
-		self: State<T, V>, 
-		(self: State<T, V>) -> any?
-	) -> State<T, V>,
+		self: Amplified<T, V>, 
+		(self: Amplified<T, V>) -> any?
+	) -> Amplified<T, V>,
 
 	custom:  (
-		self: State<T, V>, name: string
-	) -> ( any? ) -> State<T, V>,
+		self: Amplified<T, V>, name: string
+	) -> ( any? ) -> Amplified<T, V>,
 
 	connect: (
-		self: State<T, V>, name: any?
-	) -> ( nil | (any?)->any? ) -> State<T, V>
+		self: Amplified<T, V>, name: any?
+	) -> ( nil | (any?)->any? ) -> Amplified<T, V>
 } --& V
 , {} :: {})
 ) & V
@@ -200,11 +201,6 @@ export type Lifetime = (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue
 
 export type mount = <T>(garbage: garbage<any>, object: Instance, amplified: Amplified<unknown>, fn: nil | (self: any, object: Instance)->...any, lifetime: nil | (self: any, object: Instance)->...any)->T
 
-
-export type SchemaTypes = {
-	
-}
-
 export type SharedAmplified = {
 	All: (SharedAmplified, values: {[string | number]: any?} ) -> SharedAmplified,  
 	For: (SharedAmplified, players: {Player}, values: {[string | number]: any?} ) -> SharedAmplified,
@@ -215,6 +211,61 @@ export type SharedAmplified = {
 
 --[[ @end_section Amplified Tables ]]
 
+--[[ @section Observables ]]
+
+export type Observable = setmetatable<{
+	connections: { 
+		[any]: (...any?) -> ...any? 
+	},
+
+	--_onclose: nil | (...any?) -> ...any?,
+
+	---The player's current health, from 0 to 100.
+	connect: (
+		self: any,
+		name: any?
+	) -> ( nil | (...any?) -> ...any? ) -> Observable,
+
+	emit: (
+		self: any,
+		...any?
+	) -> Observable,
+
+	onclose: (self: Observable, name: any) -> (fn: nil | (...any?) -> ...any?) -> Observable,
+	close: (self: any) -> (),
+	
+	BindToClose: (self: any) -> Observable,
+
+	subscribe: (
+		self: any,
+		fn: (...any?)->...any?
+	) -> Observable,
+	unsubscribe: (
+		self: any,
+		fn: (...any?)->...any?
+	) -> Observable
+} & {
+	---list of observable operators
+	pipe: (Observable) -> Observable,
+
+	--transformation
+	take: (Observable, amount: number) -> Observable,
+	last: (Observable) -> Observable,
+
+	filter: (Observable, fn: (...any) -> boolean) -> Observable,
+	timeout: (Observable, time: number) -> Observable,
+
+	delay: (Observable, time: number) -> Observable,
+
+	map: (Observable, fn: (...any)->...any) -> Observable,
+	scan: (Observable, fn: (item: any?, result: any?)->...any) -> Observable,
+}, {
+	__call: (
+		...any?
+	) -> Observable,
+}>
+
+--[[ @end_section Amplified Tables ]]
 
 export type Alloy = {
 	_version: {major: number, minor: number, isRelease: boolean},
@@ -319,15 +370,12 @@ export type Alloy = {
 	mount: mount,
 	
 	--[=[
-		Mounts an Amplified table on an `instance`.
+		unfinished
+	]=]
+	Observable: (garbage: garbage<any>)->Observable,
 
-		@param garbage  *Garbage Collector*
-		@param object  *The object to mount the Amplified on*
-		@param amplified *The Amplified table*
-		@param fn *Optional function that decides what the mounting will return*
-		@param lifetime *Optional function that will be called and halted when the mounted object is cleaned*
-
-		@return `object` or `fn(amplified, object)`
+	--[=[
+		unfinished
 	]=]
 	Shared: (tbl: {})->(),
 

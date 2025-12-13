@@ -1,11 +1,11 @@
 --!strict
 
-local SharedHandler = require "@self/Boundary/SharedHandler"
 local Types = require(script.Types)
 
 export type State<T = any> = Types.StateObject<T>
 export type garbage = Types.garbage
 export type Amplified<T> = Types.Amplified<T>
+export type Observable = Types.Observable
 
 local garbage = require(script.State.Garbage)
 --local derive = require(script.State.derive)
@@ -21,14 +21,14 @@ local onChange = require(script.Amplified.onChange)
 
 local mount = require(script.Amplified.mount)
 
-local SharedAmplified = require(script.Boundary.SharedHandler)
+local Observable = require(script.Observable.Observable)
 
 local Computed = require(script.presetExtensions.Computed)
 local Effect = require(script.presetExtensions.Effect)
 local Observer = require(script.presetExtensions.Observer)
 local New = require(script.presetExtensions.New)
 
-local Alloy = table.freeze {
+local Alloy: Types.Alloy = table.freeze {
 	_version = { major = 0, minor = 1, isRelease = false },
 
 	--State manager
@@ -46,7 +46,7 @@ local Alloy = table.freeze {
 
 	mount = mount :: Types.mount,
 
-	Shared = SharedHandler,
+	Observable = Observable :: (garbage: garbage) -> Observable,
 
 	Computed = Computed,
 	Effect = Effect,
