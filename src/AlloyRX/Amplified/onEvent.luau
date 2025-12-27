@@ -1,7 +1,8 @@
 --!strict
 
-local main = script.Parent.Parent
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Parent.Util
+
+local Types = require(UTIL.Types)
 
 return (
 	function(event: string): any

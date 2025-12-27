@@ -1,11 +1,11 @@
 --!strict
 
-local main = script.Parent.Parent
-local Log = require(main.Log)
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Parent.Util
+local Log = require(UTIL.Log)
+local Types = require(UTIL.Types)
 
-local Config = require(main.Config)
-local deepmerge = require(main.deepMerge)
+local Config = require(script.Parent.Parent.Parent.Config)
+local deepmerge = require(UTIL.deepMerge)
 
 type State<T> = Types.StateObject<T>
 

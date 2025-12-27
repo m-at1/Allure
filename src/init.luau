@@ -1,57 +1,38 @@
 --!strict
 
-local Types = require(script.Types)
+local Config = require "@self/Config"
+
+local UTIL = require(script.Util)
+local Types = require(script.Util.Types)
 
 export type State<T = any> = Types.StateObject<T>
 export type garbage = Types.garbage
 export type Amplified<T> = Types.Amplified<T>
 export type Observable = Types.Observable
 
-local garbage = require(script.State.Garbage)
---local derive = require(script.State.derive)
+type function extend(ty: type, _INCLUDE: type, AlloyRX: type, AlloyBundle: type)
+	--return _INCLUDE
 
-local State = require(script.State.State)
-local get = require(script.State.get)
-local set = require(script.State.set)
+	for singleton: string, type: type in pairs {
+		AlloyRX = AlloyRX,
+		AlloyBundle = AlloyBundle,
+	} do
+		if _INCLUDE:readproperty(types.singleton(singleton :: string)) then
+			ty = types.intersectionof(ty, type :: type)
+		end
+	end
 
-local Amplify = require(script.Amplified.Amplified)
-local onSet = require(script.Amplified.onSet)
-local onEvent = require(script.Amplified.onEvent)
-local onChange = require(script.Amplified.onChange)
+	--[[
+	if _INCLUDE:readproperty(types.singleton "AlloyRX") then
+		ty = types.intersectionof(ty, AlloyRX)
+	end
+	]]
 
-local mount = require(script.Amplified.mount)
+	return ty
+end
 
-local Observable = require(script.Observable.Observable)
-
-local Computed = require(script.presetExtensions.Computed)
-local Effect = require(script.presetExtensions.Effect)
-local Observer = require(script.presetExtensions.Observer)
-local New = require(script.presetExtensions.New)
-
-local Alloy: Types.Alloy = table.freeze {
-	_version = { major = 0, minor = 1, isRelease = false },
-
-	--State manager
-	garbage = garbage :: Types.garbageConstructor,
-	--derive = derive,
-
-	State = State :: Types.StateConstructor,
-	get = get :: (State<unknown>) -> any?,
-	set = set :: (State<unknown>) -> any?,
-
-	Amplify = Amplify :: Types.AmplifiedConstructor,
-	onSet = onSet :: Types.onSet,
-	onEvent = onEvent :: Types.onEvent,
-	onChange = onChange,
-
-	mount = mount :: Types.mount,
-
-	Observable = Observable :: (garbage: garbage) -> Observable,
-
-	Computed = Computed,
-	Effect = Effect,
-	Observer = Observer,
-	New = New,
-} :: Types.Alloy
+local Alloy = table.freeze(UTIL.extend({
+	_version = { major = 0, minor = 1, patch = 0, isRelease = false },
+}, Config._INCLUDE)) :: extend<Types.Alloy, typeof(Config._INCLUDE), Types.AlloyRX, Types.AlloyBundle>
 
 return Alloy

@@ -1,8 +1,8 @@
 --!strict
 
-local main = script.Parent.Parent
-local Log = require(main.Log)
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Parent.Util
+local Log = require(UTIL.Log)
+local Types = require(UTIL.Types)
 
 return (
 	function(
@@ -50,7 +50,7 @@ return (
 			coroutine.resume(asyncLifetime)
 		end
 
-		table.insert(garbage :: { Types.Amplified<unknown> }, {
+		table.insert(garbage :: { any }, {
 			__deleter = function()
 				print "mounted object deletion"
 				if asyncLifetime then

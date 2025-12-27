@@ -1,8 +1,8 @@
 --!strict
 
-local main = script.Parent.Parent
+local UTIL = script.Parent.Parent.Util
 
-local Types = require(main.Types)
+local Types = require(UTIL.Types)
 
 return (
 	function(trash: any, fn: (with: (...any) -> ...any, innertrash: Types.garbage) -> ()): any

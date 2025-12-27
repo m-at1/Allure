@@ -1,10 +1,10 @@
 --!strict
 
-local main = script.Parent.Parent
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Util
+local Types = require(UTIL.Types)
 
-local Amplify = require(main.Amplified.Amplified)
-local mount = require(main.Amplified.mount)
+local Amplify = require(script.Parent.Parent.AlloyRX.Amplified.Amplified)
+local mount = require(script.Parent.Parent.AlloyRX.Amplified.mount)
 
 return function(
 	trash: Types.garbage<unknown>,

@@ -217,10 +217,8 @@ export type Observable = setmetatable<{
 	connections: { 
 		[any]: (...any?) -> ...any? 
 	},
+	_filter: (any?)->any?,
 
-	--_onclose: nil | (...any?) -> ...any?,
-
-	---The player's current health, from 0 to 100.
 	connect: (
 		self: any,
 		name: any?
@@ -235,6 +233,7 @@ export type Observable = setmetatable<{
 	close: (self: any) -> (),
 	
 	BindToClose: (self: any) -> Observable,
+	BindToLastEmission: (self: any, fn: ()->()) -> Observable,
 
 	subscribe: (
 		self: any,
@@ -256,9 +255,20 @@ export type Observable = setmetatable<{
 	timeout: (Observable, time: number) -> Observable,
 
 	delay: (Observable, time: number) -> Observable,
+	startWith: (Observable, ...any) -> Observable,
 
 	map: (Observable, fn: (...any)->...any) -> Observable,
 	scan: (Observable, fn: (item: any?, result: any?)->...any) -> Observable,
+
+	distinct: (Observable) -> Observable,
+	deduplicate: (Observable) -> Observable,
+
+	timer: (Observable, time: number, item: any) -> Observable,
+	--Range
+	--Interval
+
+	skip: (Observable, amount: number) -> Observable,
+	ignoreElements: (Observable) -> Observable,
 }, {
 	__call: (
 		...any?
@@ -268,8 +278,11 @@ export type Observable = setmetatable<{
 --[[ @end_section Amplified Tables ]]
 
 export type Alloy = {
+	--_extend: any?,
 	_version: {major: number, minor: number, isRelease: boolean},
-	
+}
+
+export type AlloyRX = {
 	--[=[
 		Creates a garbage collector with methods from the parameters.
 
@@ -370,15 +383,45 @@ export type Alloy = {
 	mount: mount,
 	
 	--[=[
-		unfinished
+		Creates an empty observable stream. Identical to Never
 	]=]
 	Observable: (garbage: garbage<any>)->Observable,
+
+	--[=[
+		Creates an observable stream that does not emit anything and closes immediately.
+	]=]
+	Empty: (garbage: garbage<any>)->Observable,
+
+	--[=[
+		Creates an observable stream that emits `item` and closes immediately.
+	]=]
+	Just: (garbage: garbage<any>, item: any)->Observable,
+
+	--[=[
+		Creates an observable stream that emits integers starting from n and ending at m. 
+		</br>Ascends each emission by 1 if m > n and -1 if m < n.
+		</br>Immediately closes the observable afterwards.
+	]=]
+	Range: (garbage: garbage<any>, n: number, m: number)->Observable,
+
+	--[=[
+		Creates an observable that repeats a sequence of items `amount` times and closes.
+	]=]
+	Repeat: (garbage: garbage<any>, amount: number, ...any)->Observable,
+
+	--[=[
+		Creates an observable stream that emits ascending integers starting from 0 infinitely, spaced by `interval` ms each.
+	]=]
+	Interval: (garbage: garbage<any>, interval: number)->Observable,
 
 	--[=[
 		unfinished
 	]=]
 	Shared: (tbl: {})->(),
 
+}
+
+export type AlloyBundle = {
 	--[=[
 		Preset extension Computed.
 	]=]

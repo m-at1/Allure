@@ -1,7 +1,7 @@
 --!strict
 
-local main = script.Parent.Parent
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Util
+local Types = require(UTIL.Types)
 
 return function(trash: Types.garbage<unknown>, observedstate: Types.StateObject<any>): any
 	local connections: { () -> ...any? } = {}

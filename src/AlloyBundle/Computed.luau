@@ -1,7 +1,7 @@
 --!strict
 
-local main = script.Parent.Parent
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Util
+local Types = require(UTIL.Types)
 
 return (
 	function(trash: any, fn: (with: (...any) -> ...any, innertrash: Types.garbage) -> ()): any
@@ -32,10 +32,10 @@ return (
 					return self.__value
 				end
 
-				for state, value in self.connectedvalues do
+				for state: Types.State<any>, value in self.connectedvalues do
 					if value ~= state:get() then
 						--update values
-						for st, _ in self.connectedvalues do
+						for st: Types.State<any>, _ in self.connectedvalues do
 							self.connectedvalues[st] = st:get()
 						end
 

@@ -1,11 +1,15 @@
 --!strict
 --#selene: allow(shadowing)
 
-local main = script.Parent.Parent
-local Log = require(main.Log)
-local Types = require(main.Types)
+local UTIL = script.Parent.Parent.Parent.Util
+local Log = require(UTIL.Log)
+local Types = require(UTIL.Types)
 
-local Effect = require(main.presetExtensions.Effect)
+-- Crossdirectory: Effect used by State metamethods
+local Effect = nil :: any
+if script.Parent.Parent.Parent:FindFirstChild "AlloyBundle" then
+	Effect = require(script.Parent.Parent.Parent.AlloyBundle.Effect)
+end
 
 function StateConstructor(trash: any, initialvalue: unknown): any
 	if typeof(trash) ~= "table" then
@@ -127,71 +131,76 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 			__call = function(self, args)
 				return self.__setter(args)
 			end,
-
-			-- preset effect extensions
-			__concat = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) .. (with(value) :: any)
-				end)
-			end,
-			__unm = function(table)
-				return Effect(trash, function(with, _)
-					return -with(table)
-				end)
-			end,
-			__add = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) + (with(value) :: any)
-				end)
-			end,
-			__sub = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) - (with(value) :: any)
-				end)
-			end,
-			__mul = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) * (with(value) :: any)
-				end)
-			end,
-			__div = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) / (with(value) :: any)
-				end)
-			end,
-			__idiv = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) // (with(value) :: any)
-				end)
-			end,
-			__mod = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) % (with(value) :: any)
-				end)
-			end,
-			__pow = function(table, value)
-				return Effect(trash, function(with, _)
-					return (with(table) :: any) ^ (with(value) :: any)
-				end)
-			end,
-
-			__eq = function(table, value)
-				return Effect(trash, function(with, _): any
-					return (with(table) :: any) == (with(value) :: any)
-				end)
-			end,
-			__lt = function(table, value)
-				return Effect(trash, function(with, _): any
-					return (with(table) :: any) < (with(value) :: any)
-				end)
-			end,
-			__le = function(table, value)
-				return Effect(trash, function(with, _): any
-					return (with(table) :: any) <= (with(value) :: any)
-				end)
-			end,
 		}) :: any
 	) :: Types.StateObject<unknown, typeof(self.__customs)>
+
+	--Crossdirectory presets
+	if Effect then
+		local nmt = getmetatable(newself)
+
+		-- preset effect extensions
+		nmt.__concat = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) .. (with(value) :: any)
+			end)
+		end
+		nmt.__unm = function(table)
+			return Effect(trash, function(with, _)
+				return -with(table)
+			end)
+		end
+		nmt.__add = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) + (with(value) :: any)
+			end)
+		end
+		nmt.__sub = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) - (with(value) :: any)
+			end)
+		end
+		nmt.__mul = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) * (with(value) :: any)
+			end)
+		end
+		nmt.__div = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) / (with(value) :: any)
+			end)
+		end
+		nmt.__idiv = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) // (with(value) :: any)
+			end)
+		end
+		nmt.__mod = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) % (with(value) :: any)
+			end)
+		end
+		nmt.__pow = function(table, value)
+			return Effect(trash, function(with, _)
+				return (with(table) :: any) ^ (with(value) :: any)
+			end)
+		end
+
+		nmt.__eq = function(table, value)
+			return Effect(trash, function(with, _): any
+				return (with(table) :: any) == (with(value) :: any)
+			end)
+		end
+		nmt.__lt = function(table, value)
+			return Effect(trash, function(with, _): any
+				return (with(table) :: any) < (with(value) :: any)
+			end)
+		end
+		nmt.__le = function(table, value)
+			return Effect(trash, function(with, _): any
+				return (with(table) :: any) <= (with(value) :: any)
+			end)
+		end
+	end
 
 	return newself
 end

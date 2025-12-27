@@ -44,7 +44,7 @@ Metadata and types
 local Aserde = {} :: ATypes.Aserde
 
 Aserde = table.freeze {
-	SpecialType = MetaUtils.SpecialType,
+	--SpecialType = MetaUtils.SpecialType,
 	ReadBuffer = function(buff: buffer)
 		if not buff then
 			ALog.logError("noValues", "Aserde.ReadBuffer")

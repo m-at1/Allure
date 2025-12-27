@@ -1,10 +1,10 @@
 --!strict
 --# selene: allow(shadowing)
 
-local main = script.Parent.Parent
+local UTIL = script.Parent.Parent.Parent.Util
 
-local Log = require(main.Log)
-local Types = require(main.Types)
+local Log = require(UTIL.Log)
+local Types = require(UTIL.Types)
 
 function constructor(trash: any, initialvalue: { [any]: any }): any
 	if typeof(trash) ~= "table" then
