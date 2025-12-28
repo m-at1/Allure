@@ -63,6 +63,6 @@ return (
 		return computed
 	end :: any
 ) :: (
-	trash: Types.garbage<Types.Alloy & {} & any>,
+	trash: Types.garbage<Types.Allure & {} & any>,
 	fn: (with: (...any) -> ...any, innertrash: Types.garbage) -> ()
 ) -> Types.StateObject<nil>

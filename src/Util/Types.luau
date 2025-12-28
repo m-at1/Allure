@@ -55,16 +55,14 @@ export type State<T, V={}> = {
 
 	connect: (
 		self: State<T, V>, name: any?
-	) -> ( nil | (any?)->any? ) -> State<T, V>
+	) -> ( nil | (...any?)->() | any? ) -> State<T, V>
 } & V
 
 --[=[
 	State value that can be subscribed to
 ]=]
-export type StateObject<T, V={}> = (typeof(
-	setmetatable({} :: State<T>, {__index = function() end})
-	) & V --& State<T>
-)
+export type StateObject<T, V={}> = setmetatable<State<T>, {__index: () -> (), __call: (...any)->...any?}> & V --& State<T>
+
 export type StateConstructor = (garbage: garbage<unknown>, value: unknown)->(StateObject<unknown>)
 
 --[=[
@@ -74,6 +72,7 @@ export type trashable =
 	Instance |
 	()->() |
 	State<any?> |
+	StateObject<any?> |
 	RBXScriptConnection |
 	{__deleter: ()->()} |
 	{Destroy: ()->()} |
@@ -81,7 +80,7 @@ export type trashable =
 	{_destroy: ()->()} |
 	{_Destroy: ()->()}
 
-export type garbage<T={}> = typeof(setmetatable( {} :: {trashable}, {} :: {__call: ()->()}) ) & T
+export type garbage<T={}> = setmetatable<{trashable}, {__call: ()->()}> & T
 
 
 export type garbageConstructor =
@@ -99,19 +98,19 @@ export type garbageConstructor =
 	& (<T, V, E, D, F, A, B, C, I, J, S>(garbage & S, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}) -> garbage & S & T & V & E & D & F & A & B & C & I & J)
 	& (<T, V, E, D, F, A, B, C, I, J, K, S>(garbage & S, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}, K & {}) -> garbage & S & T & V & E & D & F & A & B & C & I & J & K)
 
-	& ((Alloy) -> garbage & Alloy)
-	& (<S>(garbage & S, Alloy) -> garbage & S & Alloy)
-	& (<T, S>(garbage & S, Alloy, T & {}) -> garbage & S & Alloy & T)
-	& (<T, V, S>(garbage & S, Alloy, T & {}, V & {}) -> garbage & S & Alloy & T & V)
-	& (<T, V, E, S>(garbage & S, Alloy, T & {}, V & {}, E & {}) -> garbage & S & Alloy & T & V & E)
-	& (<T, V, E, D, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}) -> garbage & S & Alloy & T & V & E & D)
-	& (<T, V, E, D, F, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}) -> garbage & S & Alloy & T & V & E & D & F)
-	& (<T, V, E, D, F, A, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}) -> garbage & S & Alloy & T & V & E & D & F & A)
-	& (<T, V, E, D, F, A, B, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}) -> garbage & S & Alloy & T & V & E & D & F & A & B)
-	& (<T, V, E, D, F, A, B, C, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}) -> garbage & S & Alloy & T & V & E & D & F & A & B & C)
-	& (<T, V, E, D, F, A, B, C, I, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}) -> garbage & S & Alloy & T & V & E & D & F & A & B & C & I)
-	& (<T, V, E, D, F, A, B, C, I, J, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}) -> garbage & S & Alloy & T & V & E & D & F & A & B & C & I & J)
-	& (<T, V, E, D, F, A, B, C, I, J, K, S>(garbage & S, Alloy, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}, K & {}) -> garbage & S & Alloy & T & V & E & D & F & A & B & C & I & J & K)
+	& ((Allure) -> garbage & Allure)
+	& (<S>(garbage & S, Allure) -> garbage & S & Allure)
+	& (<T, S>(garbage & S, Allure, T & {}) -> garbage & S & Allure & T)
+	& (<T, V, S>(garbage & S, Allure, T & {}, V & {}) -> garbage & S & Allure & T & V)
+	& (<T, V, E, S>(garbage & S, Allure, T & {}, V & {}, E & {}) -> garbage & S & Allure & T & V & E)
+	& (<T, V, E, D, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}) -> garbage & S & Allure & T & V & E & D)
+	& (<T, V, E, D, F, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}) -> garbage & S & Allure & T & V & E & D & F)
+	& (<T, V, E, D, F, A, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}) -> garbage & S & Allure & T & V & E & D & F & A)
+	& (<T, V, E, D, F, A, B, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}) -> garbage & S & Allure & T & V & E & D & F & A & B)
+	& (<T, V, E, D, F, A, B, C, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}) -> garbage & S & Allure & T & V & E & D & F & A & B & C)
+	& (<T, V, E, D, F, A, B, C, I, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}) -> garbage & S & Allure & T & V & E & D & F & A & B & C & I)
+	& (<T, V, E, D, F, A, B, C, I, J, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}) -> garbage & S & Allure & T & V & E & D & F & A & B & C & I & J)
+	& (<T, V, E, D, F, A, B, C, I, J, K, S>(garbage & S, Allure, T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}, K & {}) -> garbage & S & Allure & T & V & E & D & F & A & B & C & I & J & K)
 
 	& (<T>(T & {}) -> garbage & T)
 	& (<T, V>(T & {}, V & {}) -> garbage & T & V)
@@ -128,10 +127,7 @@ export type garbageConstructor =
 
 --[[ @section Amplified Tables ]]
 
-
-export type Amplified<T, V={}> = typeof(
-	setmetatable( {} :: { --}, {} :: {})--__index: (...any?)->(...any?), __newindex: (...any?)->(...any?)} )
---) & {
+export type _AMP<T, V={}> = { --}, {} :: {})--__index: (...any?)->(...any?), __newindex: (...any?)->(...any?)} )
 	__getter: () -> T,
 	__setter: (T) -> ...any,
 
@@ -141,7 +137,7 @@ export type Amplified<T, V={}> = typeof(
 		}, 
 		any, 
 		any
-	) -> (),
+	) -> any,
 
 	__deleter: () -> (),
 	
@@ -186,10 +182,10 @@ export type Amplified<T, V={}> = typeof(
 
 	connect: (
 		self: Amplified<T, V>, name: any?
-	) -> ( nil | (any?)->any? ) -> Amplified<T, V>
-} --& V
-, {} :: {})
-) & V
+	) -> ( nil | (self: Amplified<T, V>, k: any, v: any)->any? ) -> Amplified<T, V>
+} & V
+
+export type Amplified<T, V={}> = setmetatable<_AMP<T, V>, {__index: () -> (), __call: (...any)->...any?}>
 
 export type AmplifiedConstructor = (garbage: garbage<unknown>, table: unknown)->(Amplified<unknown>)
 
@@ -277,12 +273,12 @@ export type Observable = setmetatable<{
 
 --[[ @end_section Amplified Tables ]]
 
-export type Alloy = {
+export type Allure = {
 	--_extend: any?,
 	_version: {major: number, minor: number, isRelease: boolean},
 }
 
-export type AlloyRX = {
+export type AllureRX = {
 	--[=[
 		Creates a garbage collector with methods from the parameters.
 
@@ -297,7 +293,7 @@ export type AlloyRX = {
 
 		@param garbage    *Garbage Collector*
 		@param value    *Initial value*
-		@within Alloy
+		@within Allure
 
 		@return StateObject
 	]=]
@@ -421,16 +417,16 @@ export type AlloyRX = {
 
 }
 
-export type AlloyBundle = {
+export type AllureBundle = {
 	--[=[
 		Preset extension Computed.
 	]=]
-	Computed: (trash: garbage<Alloy & {} & any>, fn: (with: (...any)->(), innertrash: garbage) -> ()) -> StateObject<nil>,
+	Computed: (trash: garbage<Allure & {} & any>, fn: (with: (...any)->(), innertrash: garbage) -> ()) -> StateObject<nil>,
 
 	--[=[
 		Preset extension Effect.
 	]=]
-	Effect: (trash: garbage<Alloy & {} & any>, fn: (with: (...any)->(), innertrash: garbage) -> ()) -> StateObject<nil>,
+	Effect: (trash: garbage<Allure & {} & any>, fn: (with: (...any)->(), innertrash: garbage) -> ()) -> StateObject<nil>,
 
 	--[=[
 		Preset extension Observer.

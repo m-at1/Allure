@@ -11,7 +11,7 @@ type State<T> = Types.StateObject<T>
 
 local function cleanItem(j: any, rec: number)
 	if rec >= Config.garbage_recursion_limit then
-		Log.logWarning "trash_recursion"
+		Log.logWarning("AllureRX", "trash_recursion")
 		return
 	end
 	rec += 1

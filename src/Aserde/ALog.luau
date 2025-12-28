@@ -1,7 +1,6 @@
 --!strict
 
-local prefix =
-	"[Aserde]\n\t\t>> This is the Alloy's initial serializer.\n\t\t>> Encountered an error that could not be resolved:\n\t\t\t"
+local prefix = "[Aserde]\n\t\t>> Encountered an error that could not be resolved:\n\t\t\t"
 
 local errors = {
 	noValues = "%s received zero arguments.",

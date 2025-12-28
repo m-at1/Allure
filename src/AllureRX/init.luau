@@ -27,4 +27,4 @@ return {
 	Range = require(script.Observable.Range),
 	Interval = require(script.Observable.Interval),
 	Repeat = require(script.Observable.Repeat),
-} :: Types.AlloyRX
+} :: Types.AllureRX

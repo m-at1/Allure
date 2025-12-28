@@ -2,8 +2,8 @@
 
 return table.freeze {
 	_INCLUDE = {
-		AlloyRX = true,
-		--AlloyBundle = true,
+		AllureRX = true,
+		AllureBundle = true,
 	},
 
 	garbage_recursion_limit = 6,

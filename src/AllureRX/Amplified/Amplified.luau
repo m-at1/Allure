@@ -1,4 +1,5 @@
 --!strict
+
 --# selene: allow(shadowing)
 
 local UTIL = script.Parent.Parent.Parent.Util
@@ -6,15 +7,15 @@ local UTIL = script.Parent.Parent.Parent.Util
 local Log = require(UTIL.Log)
 local Types = require(UTIL.Types)
 
-function constructor(trash: any, initialvalue: { [any]: any }): any
+function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 	if typeof(trash) ~= "table" then
 		Log.logError("noGarbage", "...:Amplified {}")
 	end
 	if typeof(initialvalue) ~= "table" then
-		Log.logError "amplifiedTable"
+		Log.logError("AllureRX", "amplifiedTable")
 	end
 
-	local self: Types.Amplified<unknown, {}> = {} :: Types.Amplified<unknown, {}>
+	local self: Types._AMP<unknown, {}> = {} :: Types._AMP<unknown, {}>
 
 	self.__value = {} :: { [any]: any }
 
@@ -22,7 +23,7 @@ function constructor(trash: any, initialvalue: { [any]: any }): any
 		return self.__value
 	end
 
-	self.__setter = function(args)
+	self.__setter = function(args: T)
 		if self.__value == args :: any then
 			return self.__value
 		end
@@ -35,7 +36,7 @@ function constructor(trash: any, initialvalue: { [any]: any }): any
 	self.__updater = function(a: { [any]: (self: Types.Amplified<unknown>, k: any, v: any) -> ...any? }, k, v)
 		for _, f in a do
 			if f then
-				f(self, k, v)
+				f(self :: any, k, v)
 			end --<<< here self:updater
 		end
 	end
@@ -76,13 +77,13 @@ function constructor(trash: any, initialvalue: { [any]: any }): any
 
 	self.setter = function(
 		self: Types.Amplified<unknown>,
-		fn: nil | (self: Types.Amplified<unknown>, val: any?) -> any?
+		fn: nil | (self: Types.Amplified<unknown>, val: T) -> ...any?
 	): Types.Amplified<unknown>
-		self.__setter = function(val)
+		self.__setter = function(val: T)
 			if not fn then
 				return self.__value
 			end
-			return fn(self, val)
+			return fn(self, val) :: {}
 		end
 		return self
 	end
@@ -99,7 +100,7 @@ function constructor(trash: any, initialvalue: { [any]: any }): any
 			return self
 		end
 
-		self.__updater = function()
+		self.__updater = function(a: typeof(self.connections), k: any, v: any)
 			for _, f in pairs(self.connections) do
 				fn(self, f)
 			end
@@ -136,8 +137,10 @@ function constructor(trash: any, initialvalue: { [any]: any }): any
 	self.connect = function(
 		self: Types.Amplified<unknown>,
 		name: any?
-	): (fn: nil | (...any?) -> any?) -> Types.Amplified<unknown>
-		return function(fn: nil | (...any?) -> any?)
+	): (
+		fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> any?
+	) -> Types.Amplified<unknown>
+		return function(fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> any?)
 			if name == nil then
 				name = fn
 			end
@@ -218,7 +221,7 @@ function constructor(trash: any, initialvalue: { [any]: any }): any
 		__newindex = self.__value,
 	})
 
-	for k, v in initialvalue do
+	for k, v in pairs(initialvalue) do
 		--newself[k] = v
 		___nindex(nil, k :: any, v)
 	end

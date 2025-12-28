@@ -10,12 +10,12 @@ export type garbage = Types.garbage
 export type Amplified<T> = Types.Amplified<T>
 export type Observable = Types.Observable
 
-type function extend(ty: type, _INCLUDE: type, AlloyRX: type, AlloyBundle: type)
+type function extend(ty: type, _INCLUDE: type, AllureRX: type, AllureBundle: type)
 	--return _INCLUDE
 
 	for singleton: string, type: type in pairs {
-		AlloyRX = AlloyRX,
-		AlloyBundle = AlloyBundle,
+		AllureRX = AllureRX,
+		AllureBundle = AllureBundle,
 	} do
 		if _INCLUDE:readproperty(types.singleton(singleton :: string)) then
 			ty = types.intersectionof(ty, type :: type)
@@ -23,16 +23,16 @@ type function extend(ty: type, _INCLUDE: type, AlloyRX: type, AlloyBundle: type)
 	end
 
 	--[[
-	if _INCLUDE:readproperty(types.singleton "AlloyRX") then
-		ty = types.intersectionof(ty, AlloyRX)
+	if _INCLUDE:readproperty(types.singleton "AllureRX") then
+		ty = types.intersectionof(ty, AllureRX)
 	end
 	]]
 
 	return ty
 end
 
-local Alloy = table.freeze(UTIL.extend({
+local Allure = table.freeze(UTIL.extend({
 	_version = { major = 0, minor = 1, patch = 0, isRelease = false },
-}, Config._INCLUDE)) :: extend<Types.Alloy, typeof(Config._INCLUDE), Types.AlloyRX, Types.AlloyBundle>
+}, Config._INCLUDE)) :: extend<Types.Allure, typeof(Config._INCLUDE), Types.AllureRX, Types.AllureBundle>
 
-return Alloy
+return Allure

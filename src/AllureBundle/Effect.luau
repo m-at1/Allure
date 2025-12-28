@@ -32,11 +32,12 @@ return (
 			effect.__updater()
 		end
 
-		effect.__value = fn(function(...: any)
+		effect.__value = fn(function(...: any | Types.StateObject<unknown>)
 			for _, state in pairs { ... } do
 				if not state.connect then
 					continue
 				end
+				state = state :: Types.StateObject<unknown>
 				state:connect(updatefn)(updatefn)
 				table.insert(effect._states :: any, state :: any) --horrid
 			end
@@ -51,6 +52,6 @@ return (
 		end)
 	end :: any
 ) :: (
-	trash: Types.garbage<Types.Alloy & {} & any>,
+	trash: Types.garbage<Types.Allure & {} & any>,
 	fn: (with: (...any) -> ...any, innertrash: Types.garbage) -> ()
 ) -> Types.StateObject<nil>

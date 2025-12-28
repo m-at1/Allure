@@ -2,7 +2,7 @@
 --!optimize 2
 local Types = require "./Types"
 
-function extend<T>(t0: Types.Alloy, t: T)
+function extend<T>(t0: Types.Allure, t: T)
 	for t1, _ in t do
 		if not t1 then
 			continue

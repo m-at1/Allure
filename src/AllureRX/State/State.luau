@@ -7,13 +7,13 @@ local Types = require(UTIL.Types)
 
 -- Crossdirectory: Effect used by State metamethods
 local Effect = nil :: any
-if script.Parent.Parent.Parent:FindFirstChild "AlloyBundle" then
-	Effect = require(script.Parent.Parent.Parent.AlloyBundle.Effect)
+if script.Parent.Parent.Parent:FindFirstChild "AllureBundle" then
+	Effect = require(script.Parent.Parent.Parent.AllureBundle.Effect)
 end
 
 function StateConstructor(trash: any, initialvalue: unknown): any
 	if typeof(trash) ~= "table" then
-		Log.logError("noGarbage", "...:State(...)")
+		Log.logError("AllureRX", "noGarbage", "...:State(...)")
 	end
 
 	local self: Types.State<unknown> = { __value = initialvalue } :: Types.State<unknown>
@@ -113,8 +113,11 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 		end
 	end
 
-	self.connect = function(self: Types.State<unknown>, name: any?): (fn: nil | (any?) -> any?) -> Types.State<unknown>
-		return function(fn: nil | (any?) -> any?)
+	self.connect = function(
+		self: Types.State<unknown>,
+		name: any?
+	): (fn: nil | (...any?) -> () | any?) -> Types.State<unknown>
+		return function(fn: nil | (...any?) -> () | any?)
 			if name == nil then
 				name = fn
 			end
