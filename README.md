@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <i>Reactive Framework of Frameworks for the Roblox Metaverse.</i>
+  <i>Reactive Framework of Frameworks for the Roblox Metaverse.</i> </br>
   <i>Inspired by Spring</i>
 </p>
 
