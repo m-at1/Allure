@@ -3,7 +3,8 @@
 </p>
 
 <p align="center">
-  <i>Reactive Holistic Meta-framework for the Roblox Metaverse.</i>
+  <i>Reactive Framework of Frameworks for the Roblox Metaverse.</i>
+  <i>Inspired by Spring</i>
 </p>
 
 <h1></h1>
@@ -13,43 +14,66 @@
   <a href="https://github.com/m-at1/Alloy/releases"><img width="160" height="50" src="./images/Docs.png" alt="Docs"></a>ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ
   <a href="https://github.com/m-at1/Alloy/releases"><img width="130" height="50" src="./images/Benchmarks.png" alt="Benchmarks"></a>
 </div>
-‎‎‎‎‎‎‎‎
-<div align="center">
 
-### Feature Matrix
 
-| Feature / Paradigm / Framework | *Alloy* | Fusion | Vide | Blend | React + Rodux/Charm | Knit + Comm |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| *State Machinery (ISM)* | ✅</br>Customizable | ✅</br>Main principle | ✅</br>Sources | ❌</br>Requires a tool | ✅</br>Rodux / Charm | ❌</br>Not purposed / Requires a tool |
-| *Garbage Collection* | ✅</br>Forced / Integrated | ✅</br>Optional | ❌</br>Not present | 🟨</br>Easily integrated with Maid | ❌</br>Requires a tool | ❌</br>Not purposed / Requires a tool |
-| *UI Framework* | ✅</br>Present | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>Main purpose | ✅</br>React | ❌</br>Not purposed / Requires a tool |
-| *Desynchronization (Actors)* | ✅</br>Integrated | ❌</br>Requires a tool | ❌</br>Requires a tool | 🟨</br>Promises | ❌</br>Requires a tool | 🟨</br>Promises |
-| *Architecture (MVC)* | ✅</br>Forced / Integrated | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ❌</br>User decision | ✅</br>Similar, Main purpose |
-| *Replicated States* | ✅</br>Shared Amplified | ❌</br>Not present | ❌</br>Not present | ❌</br>Not present | ✅</br>Charm | ❌</br>Not present |
-| *Network Middleware* | ✅</br>Protocols | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Not purposed / Requires a tool | ❌</br>Requires a tool | ✅</br>Comm |
-
-</br>
-
-</div>
-
-> [!IMPORTANT]
-> <div align="center"> 
->
-> *Despite being a **holistic meta-framework**, Alloy is not made to "decimate multi-package workflows" or to provide an all-in-one solution, no. The entire purpose of Alloy is to without any problems of integration tie together UI, states, streams, Network, Parallel Luau and induce MVC. That's it. It's not made to provide you a Signal or a Datastore lib.*
-> 
-> </div>
-
-### ➕ Key Benefits
-
-- 💯 ***Holistic: Seamlessly integrated ecosystem***
-    - Connect replication, garbage collection, state machinery and structure your game with Model-View-Controller and Actors all with zero effort and boilerplate.
-
-- 🎨 ***Customizable: Provides multiple tools to suit the framework for you***
-    - Design your own States, objects, mounting, syntax, replication rules and more.
-    - Create custom components for reuse: exponentiate the speed of game development.
-
-- 📈 ***Responsible: An optimized approach to control the entire structure.***
-    - Alloy manages the entire game for you: Efficiently serializes replicated data, forces ratelimiting and guarding, provides best practices in very simple terms.
+‎‎‎‎‎‎
+## 🎨 Contains
+- ### AllureRx
+  - **Heavily customizable composition of garbage collection, states and Observables**
+    - Customize the setter, getter, updater, deleter of states, create custom attributes and more.
+    - Seamlessly combine and react to observable streams and states.
+  - **UI Framework based on reactivity**
+    - Use and customize heavily reactive amplified tables.
+    - Mount amplified tables on instances.
+- ### AllureBundle
+  - **Combination of preset extensions**
+    - Such as Computed, Observer, Spring, Stack or Effect.
+    - In allure these are not builtin functionality: You can easily make one yourself.
+  - **A Guide to extending AllureRx**
+    - Ability to create your own observable filters and operators with ease.
+    - Clear guidance and shortcuts to creating reactive extensions.
+- ### AllureNet
+  - **Give data to clients: Shared Amplified**
+    - Acts as extended replicated state machinery.
+    - Replicates each allowed key change to specific clients.
+    - Can be exposed or hidden to specific clients.
+  - **Protocol: guarded data stream**
+    - Represents a data stream between 2 ends, that can be anywhere on server or client, which is closely guarded by multiple tools.
+    - Can be attached to anything: create a Protocol between clientside controllers, or a client-server protocol, or a protocol between serverside services, etc.
+    - Has multiple tools required for guarding the data stream: memory limit, ratelimit, memory bytewise ratelimit, type guarding and many more.
+- ### Aserde
+  - **The internal __schemaless__ serializer/deserializer**
+    - Represent memory as metadata and data.
+    - Requires no schema to read and write.
+  - **Optimized solution**
+    - Is blazingly fast at reading and writing.
+    - Performs deduplication.
+## 🔮 What you can expect for 1.0.0
+- ### AllureActor
+  - **Wrapper over roblox's Actor**
+    - Written to provide more configuration.
+    - Represent parallel luau in a professional way.
+  - **Reactivity: Microservice**
+    - Independent parallel service.
+    - Communicate only via Protocols and customizable rules, such as request-publish or request-reply.
+- ### AllureDB
+  - **A serialized unit of data**
+    - Make calls and requests to save, write, read.
+    - Stores data in a secure location.
+  - **AQM: Allure Query Module**
+    - Resembles SQL and SQLite.
+    - Create cursors and navigate through databases with ease.
+    - Apply filters and get fields you need.
+- ### AllureMVC
+  - **Division of View and Logic units**
+    - Componentize and make reusable logic.
+    - Represent Model, View and Logic as microservices.
+  - **Central Controller**
+    - Main Router Microservice that solves the problem for a multitude of clients at once.
+    - Finish the idea with creating individual branches of controllers and microservices for each client.
+    
+## Key Benefits
+- ...
 
 ---
 
@@ -58,23 +82,9 @@
 > Alloy has major plans for the upcoming features. </br>
 > There are several instances of unfinished documentation, code, and issues.
 
-### Contents
-- Feature Matrix
-- Key benefits
-- Architectural design patterns   *(HERE)*
-- Introducing
-- License
-
-## 🍀 Architectural design patterns
-- 🪟 ***Model-View-Controller***
-  - Alloy induces a MVC pattern with Central Controller, Client Session Controllers and Model for the server; View Actor, Controller Actor(s) for the client.
-    </br></br>
-- 🎭 ***Actor-driven Reactivity***
-  - Alloy refabricates Roblox's Actors into a much more controllable representation. Model and View utilize state machinery and communication is represented as a strictly controlled data stream.
-
-# *Introducing*
-## ⚛️ Reactive Programming: overly customizable state machinery and observables
--  Alloy introduces heavily extensible, customizable and replicated state machinery, observable streams and integrates everything into garbage collection.
+# *In depth*
+## ⚛️ AllureRx: overly customizable state machinery and observables
+-  Allure introduces heavily extensible, customizable and replicated state machinery, observable streams and integrates everything into garbage collection.
   <br>Out of that:<br>
 
     * **States can be easily customized.**
@@ -84,8 +94,7 @@
            
     * **Representing I/O with observable streams**
          > Observables are an extension of the standard State, implying that they have the exact same customization functionality.
-         > Operators generate new observables that can be subscribed to.
-         > Subscribers track an observable and have a `unsubscribe`, `delete` and `resubscribe` functionality.
+         > Operators and filters generate new observables that can be subscribed to.
 
     * **Encouraging extension.**
          > Each of the mentioned benefits share one main goal: to **freely allow extension**. Create your own mounting, your own States, observables, operators, objects, pools and more. Suit the framework for your design and needs.
@@ -111,8 +120,8 @@ local function Counter(
 end
 ```
 
-## 🎭 Model-View-Controller Architecture: via Actors
--  Alloy induces an MVC architecture approach with a custom refabrication of Actors: recreated for the better of control and opportunity.
+## 🎭 Ideal game architecture: AllureActor + AllureMVC
+-  Allure induces an MVC architecture approach with a custom refabrication of Actors: recreated for the better of control and opportunity.
    </br>The game's structure is then as follows:</br>
 
     * ### **Clientside**
@@ -130,8 +139,8 @@ end
              > </br>The traffic is routed and forwarded to the Client Session Controller created and designated to handle that client's session.
              > </br>The Central Controller can control the main game state and communicate with each client's session controllers.
    
-          * ***Client Session Controllers***
-             > Communicates with children Actors that handle their part of the client's game state. (Separation of Concerns)
+          * ***Extension: Client Session Controllers***
+             > Communicates with children Microservices that handle their part of the client's game state. (Separation of Concerns)
              > </br>Sends traffic back to the clientside controller.
            
         * ***Model***
@@ -147,26 +156,9 @@ end
 
  - Anything out of this __can be customized.__
    </br> For example, you can divide clientside View into State, Model and Design. You can avoid the client session controllers if your game has less traffic. And much more.
-   
 
-## 〽️ Internal serializer
--  Aserde is the Alloy's internal buffer SerDes, optimized for multiple usecases:</br>
+---
 
-    * **Shared Amplified intends to give clients optimized state replication**, <br>
-      > - so that clients can write their own getters and updaters for it. </br>
-      > - Entire sections can be carried by Shared Amplified and mounted on the client's end, resulting in cheap SSR. </br>
-      > - All replications serialize and replicate only the updating part.
-    
-    * **Rules act as specific permissions for a client to *act* and bring changes.** <br>
-      > - Rules force and induce custom type guarding, ratelimits, query algorithms like Leaky Bucket and more. <br>
-      > - All communication is serialized and the guards are double checked on both server and client aforehand.
-
-```luau
---[[  ]]
-local Alloy = require "../Packages/Alloy"
-
---...
-```
-
-## ...
-  ...
+## License
+Allure is freely shared via MIT License.
+Give me a shoutout if you want!
