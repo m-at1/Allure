@@ -19,56 +19,63 @@
 ‎‎‎‎‎‎
 ## 🎨 Contains
 - ### AllureRx
-  - **Heavily customizable composition of garbage collection, states and Observables**
+  - ***Heavily customizable composition of garbage collection, states and Observables***
     - Customize the setter, getter, updater, deleter of states, create custom attributes and more.
     - Seamlessly combine and react to observable streams and states.
-  - **UI Framework based on reactivity**
+      
+  - ***UI Framework based on reactivity***
     - Use and customize heavily reactive amplified tables.
     - Mount amplified tables on instances.
 - ### AllureBundle
-  - **Combination of preset extensions**
+  - ***Combination of preset extensions***
     - Such as Computed, Observer, Spring, Stack or Effect.
     - In allure these are not builtin functionality: You can easily make one yourself.
-  - **A Guide to extending AllureRx**
+      
+  - ***A Guide to extending AllureRx***
     - Ability to create your own observable filters and operators with ease.
     - Clear guidance and shortcuts to creating reactive extensions.
 - ### AllureNet
-  - **Give data to clients: Shared Amplified**
+  - ***Give data to clients: Shared Amplified***
     - Acts as extended replicated state machinery.
     - Replicates each allowed key change to specific clients.
     - Can be exposed or hidden to specific clients.
-  - **Protocol: guarded data stream**
+      
+  - ***Protocol: guarded data stream***
     - Represents a data stream between 2 ends, that can be anywhere on server or client, which is closely guarded by multiple tools.
     - Can be attached to anything: create a Protocol between clientside controllers, or a client-server protocol, or a protocol between serverside services, etc.
     - Has multiple tools required for guarding the data stream: memory limit, ratelimit, memory bytewise ratelimit, type guarding and many more.
 - ### Aserde
-  - **The internal __schemaless__ serializer/deserializer**
+  - ***The internal __schemaless__ serializer/deserializer***
     - Represent memory as metadata and data.
     - Requires no schema to read and write.
-  - **Optimized solution**
+      
+  - ***Optimized solution***
     - Is blazingly fast at reading and writing.
     - Performs deduplication.
 ## 🔮 What you can expect for 1.0.0
 - ### AllureActor
-  - **Wrapper over roblox's Actor**
+  - ***Wrapper over roblox's Actor***
     - Written to provide more configuration.
     - Represent parallel luau in a professional way.
-  - **Reactivity: Microservice**
+      
+  - ***Reactivity: Microservice***
     - Independent parallel service.
     - Communicate only via Protocols and customizable rules, such as request-publish or request-reply.
 - ### AllureDB
-  - **A serialized unit of data**
+  - ***A serialized unit of data***
     - Make calls and requests to save, write, read.
     - Stores data in a secure location.
-  - **AQM: Allure Query Module**
+      
+  - ***AQM: Allure Query Module***
     - Resembles SQL and SQLite.
     - Create cursors and navigate through databases with ease.
     - Apply filters and get fields you need.
 - ### AllureMVC
-  - **Division of View and Logic units**
+  - ***Division of View and Logic units***
     - Componentize and make reusable logic.
     - Represent Model, View and Logic as microservices.
-  - **Central Controller**
+      
+  - ***Central Controller***
     - Main Router Microservice that solves the problem for a multitude of clients at once.
     - Finish the idea with creating individual branches of controllers and microservices for each client.
     
