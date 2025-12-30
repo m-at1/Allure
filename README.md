@@ -15,7 +15,6 @@
   <a href="https://github.com/m-at1/Alloy/releases"><img width="130" height="50" src="./images/Benchmarks.png" alt="Benchmarks"></a>
 </div>
 
-
 ‎‎‎‎‎‎
 ## 🎨 Contains
 - ### AllureRx
@@ -29,7 +28,7 @@
 - ### AllureBundle
   - ***Combination of preset extensions***
     - Such as Computed, Observer, Spring, Stack or Effect.
-    - In allure these are not builtin functionality: You can easily make one yourself.
+    - In Allure these are not builtin functionality: You can easily make one yourself.
       
   - ***A Guide to extending AllureRx***
     - Ability to create your own observable filters and operators with ease.
@@ -79,8 +78,20 @@
     - Main Router Microservice that solves the problem for a multitude of clients at once.
     - Finish the idea with creating individual branches of controllers and microservices for each client.
     
-## Key Benefits
-- ...
+## 🍏 Key Benefits
+- ## Zero Pressure
+  - Allure __doesn't enforce__ Actors or MVC. You can remove almost anything you need to avoid bloat. </br>
+  You can use Allure only for states, or only for observables, or only for actors, or only for garbage collection. Because the rest can be easily removed without it all collapsing. </br>
+  If you use AllureBundle only for extension, be it: remove the rest from AllureBundle.
+
+- ## Heavily Extensible
+  - AllureBundle purposes it so you can extend anyhow, anywhere you want! Create your own state machinery, extensions, streams, filters, microservices. </br>
+  Then store these as a library or a package that you can carry along.
+
+- ## Promotes good practices
+  - If you use AllureRX you already use States and Garbage Collectors for sure. You obviously can use Allure with any other architecture, </br>
+  but if you use AllureMVC, you're for sure already using Controllers and, maybe, Services. </br>
+  Allure doesn't intend to hide complexity behind what it recommends you. You're not forced to customize states: simply use Absolved States to avoid bloat.
 
 ---
 
