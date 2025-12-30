@@ -89,9 +89,9 @@
   Then store these as a library or a package that you can carry along.
 
 - ## Promotes good practices
-  - If you use AllureRX you already use States and Garbage Collectors for sure. You obviously can use Allure with any other architecture, </br>
-  but if you use AllureMVC, you're for sure already using Controllers and, maybe, Services. </br>
-  Allure doesn't intend to hide complexity behind what it recommends you. You're not forced to customize states: simply use Absolved States to avoid bloat.
+  - If you use AllureRx you already use States and Garbage Collectors for sure. You obviously can use Allure with any other architecture, </br>
+  but if you use AllureMVC, you're for sure already using Controllers. </br>
+  Allure doesn't intend to hide complexity behind what it recommends you. You're not forced to customize states, for example, simply use Absolved States to avoid bloat.
 
 ---
 
@@ -101,35 +101,37 @@
 > There are several instances of unfinished documentation, code, and issues.
 
 # *In depth*
-## ⚛️ AllureRx: overly customizable state machinery and observables
--  Allure introduces heavily extensible, customizable and replicated state machinery, observable streams and integrates everything into garbage collection.
+## ⚛️ AllureRx: GC, UI, States and Observables
+-  AllureRx contains garbage collectors, states, observables, amplifieds and mounting.
   <br>Out of that:<br>
 
-    * **States can be easily customized.**
-         > States have a setter, getter, updater, deleter, connections and can pertain custom attributes in any shape or form.
-         > ***Amplified tables*** are a glorified `table` state with entire multitude of additional customization alongside basic State features.
+    * **States can be easily customized**
+         > States have a setter, getter, updater, deleter, connections and can have custom attributes.
+         > Never used customization? Use Absolved States, absolved of all the customization for performance.
+
+    * **Amplified tables react to changes**
+         > ***Amplified tables*** are a glorified `table` state with an entire multitude of additional customization alongside basic State features.
          > Amplifieds can be mounted on instances with lifetime functions, signals, specific updates, object pooling, etc.
            
-    * **Representing I/O with observable streams**
+    * **Representing communication and data with observable streams**
          > Observables are an extension of the standard State, implying that they have the exact same customization functionality.
          > Operators and filters generate new observables that can be subscribed to.
 
-    * **Encouraging extension.**
-         > Each of the mentioned benefits share one main goal: to **freely allow extension**. Create your own mounting, your own States, observables, operators, objects, pools and more. Suit the framework for your design and needs.
-
 ```luau
 --[[ A Counter textbutton example ]]
+--[[ Requires AllureRx + AllureBundle ]]
+
 local function Counter(
-  garbage: Alloy.garbage,
+  garbage: Allure.garbage,
 
   props
 ): Instance
   local count = garbage:State(0)
 
-  return Alloy.New "TextLabel" {
+  return Allure.New "TextLabel" {
     Text = "Count: " .. count,
 
-    mysignal = Alloy.onEvent "MouseButton1Click" (function()
+    mysignal = Allure.onEvent "MouseButton1Click" (function()
       count(count:get() + 1)
     end),
 
@@ -137,44 +139,32 @@ local function Counter(
   }
 end
 ```
+```luau
+--[[ A Counter textbutton example with Observables ]]
+--[[ Requires AllureRx + AllureBundle ]]
 
-## 🎭 Ideal game architecture: AllureActor + AllureMVC
--  Allure induces an MVC architecture approach with a custom refabrication of Actors: recreated for the better of control and opportunity.
-   </br>The game's structure is then as follows:</br>
+local function Counter(
+  garbage: Allure.garbage,
 
-    * ### **Clientside**
-        * ***View***
-           > Uses a React-like approach with state machinery.
-           
-        * ***Controller***
-           > The clientside controller is adapated to get input from View.
-           > </br>The Controller Actor(s) generates an observable stream through the designated `protocol(s)`.
+  props
+): Instance
+  local count = garbage:Observable()
+      :scan(function(value, total)
+        return value + total
+      end)
+      :emit(0)
 
-    * ### **Serverside**
-        * ***Controller***
-          * ***Central Controller***
-             > Central Controller Actor gets traffic from the `protocols` used by clients.
-             > </br>The traffic is routed and forwarded to the Client Session Controller created and designated to handle that client's session.
-             > </br>The Central Controller can control the main game state and communicate with each client's session controllers.
-   
-          * ***Extension: Client Session Controllers***
-             > Communicates with children Microservices that handle their part of the client's game state. (Separation of Concerns)
-             > </br>Sends traffic back to the clientside controller.
-           
-        * ***Model***
-          * ***Logic***
-             > All serverside logic separated into a single place.
+  return Allure.New "TextLabel" {
+    Text = "Count: " .. count,
 
-          * ***Data***
-             > The universal source of truth for player data and the game's state.
+    mysignal = Allure.onEvent "MouseButton1Click" (function()
+      count:emit(1)
+    end),
 
-        * ***View (discouraged)***
-          > Used for serverside rendering and loading of assets.
-
-
- - Anything out of this __can be customized.__
-   </br> For example, you can divide clientside View into State, Model and Design. You can avoid the client session controllers if your game has less traffic. And much more.
-
+    props
+  }
+end
+```
 ---
 
 ## License
