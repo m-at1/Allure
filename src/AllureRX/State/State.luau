@@ -33,7 +33,7 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 	end
 
 	self.__updater = function(a: { [any]: (any) -> ...any? })
-		for _, f in a do
+		for _, f in self.connections do
 			if f then
 				f(self)
 			end --<<< here self:updater
@@ -78,7 +78,7 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 		return self
 	end
 
-	self.updater = function(self, fn: (self: Types.State<unknown>, fn2: (any) -> ...any?) -> any?)
+	self.updater = function(self, fn: nil | (self: Types.State<unknown>, fn2: (any) -> ...any?) -> any?)
 		if not fn then
 			self.__updater(self.connections)
 			return self
@@ -116,10 +116,17 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 	self.connect = function(
 		self: Types.State<unknown>,
 		name: any?
-	): (fn: nil | (...any?) -> () | any?) -> Types.State<unknown>
-		return function(fn: nil | (...any?) -> () | any?)
+	): (fn: nil | (...any?) -> () | any? | Types.STATE) -> Types.State<unknown>
+		return function(fn: nil | Types.STATE | (...any?) -> () | any?)
 			if name == nil then
 				name = fn
+			end
+
+			if fn and typeof(fn) ~= "function" then
+				(fn.connect :: any)(fn)(function()
+					self.__setter((fn.get :: any)(fn))
+				end)
+				return self
 			end
 
 			self.connections[name :: any] = fn

@@ -13,6 +13,8 @@ local errors = {
 
 	clientsideSharedMod = "Attempt to modify shared amplified on the client.",
 	strangeSharedMod = "Bulk modification of shared amplified received non-table value.",
+
+	springBadType = "Spring setter expected a goal of type identical to the start value '%s' but got '%s'",
 }
 
 return {

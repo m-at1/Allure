@@ -4,11 +4,11 @@ local UTIL = script.Parent.Parent.Util
 local Types = require(UTIL.Types)
 
 return function(trash: Types.garbage<unknown>, observedstate: Types.StateObject<any>): any
-	local connections: { () -> ...any? } = {}
+	local connections: { (...any?) -> ...any? } = {}
 
 	local observer = {
-		onBind = function(fn)
-			fn()
+		onBind = function(fn: (...any?) -> ...any?)
+			fn(observedstate)
 			observedstate:connect(fn)(fn :: any)
 
 			connections[#connections] = fn
@@ -17,7 +17,7 @@ return function(trash: Types.garbage<unknown>, observedstate: Types.StateObject<
 				observedstate:connect(fn)(nil)
 			end
 		end,
-		onChange = function(fn: () -> ())
+		onChange = function(fn: (...any?) -> ())
 			observedstate:connect(fn)(fn :: any)
 
 			connections[#connections] = fn

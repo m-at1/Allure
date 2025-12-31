@@ -4,6 +4,7 @@
 
 local UTIL = script.Parent.Parent.Parent.Util
 
+local Util = require "../../Util"
 local Log = require(UTIL.Log)
 local Types = require(UTIL.Types)
 
@@ -33,8 +34,8 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 		return self.__value
 	end
 
-	self.__updater = function(a: { [any]: (self: Types.Amplified<unknown>, k: any, v: any) -> ...any? }, k, v)
-		for _, f in a do
+	self.__updater = function(k, v) --a: { [any]: (self: Types.Amplified<unknown>, k: any, v: any) -> ...any? }
+		for _, f in self.connections do
 			if f then
 				f(self :: any, k, v)
 			end --<<< here self:updater
@@ -100,7 +101,11 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 			return self
 		end
 
-		self.__updater = function(a: typeof(self.connections), k: any, v: any)
+		self.__updater = function(
+			--a: { [any]: (self: Types.Amplified<unknown>, k: any, v: any) -> ...any? },
+			k: any,
+			v: any
+		)
 			for _, f in pairs(self.connections) do
 				fn(self, f)
 			end
@@ -138,9 +143,9 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 		self: Types.Amplified<unknown>,
 		name: any?
 	): (
-		fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> any?
+		fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> () | any?
 	) -> Types.Amplified<unknown>
-		return function(fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> any?)
+		return function(fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> () | any?)
 			if name == nil then
 				name = fn
 			end
@@ -165,20 +170,38 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 		end
 
 		local function nestval(key, val: { [any]: any })
-			-- case 1, v is amplified table
-			if typeof(val) == "table" and (val._updaters or (val.custom and val.updater and not val.__kind)) then
+			-- case 1, if v is amplified table
+			-- case 2, if v is a state
+			if typeof(val) == "table" and (val._updaters or (val.connections and not val.__kind)) then
 				val = val :: any
 				-- will turn it into a table
 
+				--warn "here";
 				(self.__value :: any)[key] = val:get()
-				nestval(key, val:get())
+
+				warn("test", key, val)
+
+				--nestval() was here!
 
 				self._states[key] = val :: any
+
+				warn(self._states)
+
 				self._updaters[key] = function()
+					--warn("test", key, val, val:get())
 					nestval(key, val:get())
 				end
 				val:connect(self._updaters[key])(self._updaters[key])
+
+				--FIXME: this line halts thread for observables and does not assign them to _states
+				--HACK: i just placed it into the end shouldnt really bug that much lol
+				nestval(key, val:get())
 				return
+
+			-- case 6, if v is a function
+			elseif typeof(val) == "function" then
+				warn(val(self))
+				nestval(key, val(self))
 
 				-- case 4, if v is an onChange event that can be handled inside of the amplified
 			elseif typeof(val) == "table" and val.__kind == "onset" then
@@ -192,7 +215,7 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 				self.__updater(key :: any, val)
 				if self._onsets[key] then
 					for _, j in self._onsets[key] do
-						j(newself)
+						j(self)
 					end
 				end
 			end
@@ -208,23 +231,51 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 		__newindex = ___nindex,
 	})
 
-	setmetatable(self.__value :: any, {
-		__index = self.__customs,
+	setmetatable(self._states :: any, { --__value
+		__index = self.__value, --__customs
 	})
 
-	setmetatable(self.__customs :: any, {
-		__index = self._states,
+	setmetatable(self.__value :: any, { --__customs
+		__index = self.__customs, --_states
 	})
+
+	-- OLD: __value --> __customs --> _states
+	-- NEW: _states --> __value --> __customs
 
 	setmetatable(self, {
-		__index = self.__value, --self.__customs,
+		__index = self._states, --self.__value --self.__customs,
 		__newindex = self.__value,
 	})
 
+	local next__order: any = {}
+
 	for k, v in pairs(initialvalue) do
 		--newself[k] = v
+		if typeof(v) == "table" and not v._updaters and not v.__value and not v.connections and not v.fn then
+			next__order[k] = v
+			continue
+		end
 		___nindex(nil, k :: any, v)
 	end
+
+	print(next__order)
+	-- // ORDERING
+	repeat
+		local _nx: any = Util.deepClone(next__order)
+		next__order = {}
+
+		for _, v0 in ipairs(_nx) do
+			for k, v in pairs(v0) do
+				if typeof(v) == "table" and not v._updaters and not v.__value and not v.connections and not v.fn then
+					next__order[k] = v
+					continue
+				end
+				___nindex(nil, k :: any, v)
+			end
+		end
+
+		task.wait()
+	until #next__order == 0
 
 	return newself
 end

@@ -8,6 +8,10 @@ return table.freeze {
 
 	garbage_recursion_limit = 6,
 
+	SPRING_RENDERSTEP_PRIORITY = 10,
+	SPRING_LASTFRAME_ABS_POS = 0.005,
+	SPRING_LASTFRAME_ABS_FORCE = 0.005,
+
 	ASERDE_YIELD_READ = false,
 	ASERDE_UNIQUE_READ_LIMIT = 500,
 }

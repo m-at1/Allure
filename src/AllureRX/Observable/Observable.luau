@@ -4,6 +4,12 @@ local State = require "../State/State"
 local Promise = require(script.Parent.Parent.Parent["Promise"])
 local Types = require(script.Parent.Parent.Parent.Util.Types)
 
+-- Crossdirectory: Effect used by State metamethods
+local Effect = nil :: any
+if script.Parent.Parent.Parent:FindFirstChild "AllureBundle" then
+	Effect = require(script.Parent.Parent.Parent.AllureBundle.Effect)
+end
+
 function curry(fn, x)
 	return function(...)
 		fn(x, ...)
@@ -34,6 +40,8 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 		return a
 	end
 
+	Observable.__customs = {}
+
 	table.insert(garbage, function()
 		Observable.connections = {}
 		Observable.emit = nil :: any
@@ -44,12 +52,31 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 		Connects `fn` to `name` key to be fired upon each emission of the Observable.
 	]]
 	Observable.connect = function(self: any, name: any?)
-		return function(fn: nil | (...any?) -> ...any?)
-			Observable.connections[name or fn] = fn
+		return function(fn: nil | Types.STATE | (...any?) -> ...any?)
+			if name == nil then
+				name = fn
+			end
+
+			if fn and typeof(fn) ~= "function" then
+				(fn.connect :: any)(fn)(function()
+					Observable:emit((fn.get :: any)(fn))
+				end)
+				return Observable
+			end
+
+			Observable.connections[name] = fn
 
 			return Observable
 		end
-	end :: (self: any, name: any?) -> (nil | (...any?) -> ...any?) -> Types.Observable
+	end :: (self: any, name: any?) -> (nil | Types.STATE | (...any?) -> ...any?) -> Types.Observable
+
+	Observable.custom = function(self: Types.Observable, name: string): (fn: any?) -> Types.Observable
+		return function(fn: any? | (self: Types.Observable, val: any?) -> any?)
+			self.__customs[name] = fn
+
+			return self
+		end
+	end
 
 	--[[
 		Binds observable closure to the next emission regardless of what it is.
@@ -86,13 +113,16 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 	--[[
 		Generalized function of emission: to call each connection.
 	]]
-	local function emission(item)
-		if not item or not Observable then
+	local function emission(item): any
+		-- if not item or not observable
+		if not Observable then
 			return Observable
 		end
 
+		Observable.__value = item
+
 		for _, fn in Observable.connections do
-			fn(item)
+			fn(Observable, item)
 		end
 
 		if _BIND_TO_CLOSE then
@@ -100,6 +130,12 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 		end
 
 		return Observable
+	end
+
+	Observable.__value = nil
+
+	Observable.get = function(self: any)
+		return Observable.__value
 	end
 
 	--[[
@@ -154,6 +190,10 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 		Observable = nil :: any
 	end
 
+	Observable.__deleter = function()
+		Observable:close()
+	end
+
 	--[[
 		Shortcut to Observable:connect(fn)(fn)
 	]]
@@ -198,6 +238,19 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 				new:close()
 			end)
 		end)
+
+		return new
+	end
+
+	--[[
+		Pipes a new observable that is connected to the Observables within merger
+	]]
+	Observable.merge = function(self: Types.Observable, merger: { Types.STATE })
+		local new = pipe(self)
+
+		for _, obs: Types.STATE in merger do
+			new:connect()(obs)
+		end
 
 		return new
 	end
@@ -284,11 +337,11 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 	--[[
 		Applies a function to each emission.
 	]]
-	Observable.map = function(self: Types.Observable, fn: (...any?) -> ...any?)
+	Observable.map = function(self: Types.Observable, fn: (self: Types.Observable, ...any?) -> ...any?)
 		local new = pipe(self)
 
 		new._filter = function(item)
-			return fn(item)
+			return fn(new, item)
 		end
 
 		return new
@@ -297,14 +350,14 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 	--[[
 		Accumulates a value by applying a function to each emission.
 	]]
-	Observable.scan = function(self: Types.Observable, fn: (item: any?, result: any) -> ...any?)
+	Observable.scan = function(self: Types.Observable, fn: (self: Types.Observable, item: any?, result: any) -> ...any?)
 		local new = pipe(self)
 
 		local res = nil
 
 		new._filter = function(item)
 			if item then
-				res = fn(item, res)
+				res = fn(new, item, res)
 				item = res
 			end
 
@@ -339,11 +392,11 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 	--[[
 		Applies a function to each emission, and declines the emission if the function returns `false`.
 	]]
-	Observable.filter = function(self: Types.Observable, fn: (...any?) -> boolean)
+	Observable.filter = function(self: Types.Observable, fn: (self: Types.Observable, ...any?) -> boolean)
 		local new = pipe(self)
 
 		new._filter = function(item)
-			if not fn(item) then
+			if not fn(new, item) then
 				return
 			end
 
@@ -443,8 +496,77 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 	end
 
 	Observable = setmetatable(Observable, {
+		__index = Observable.__customs,
 		__call = curry(Observable.emit, Observable),
 	}) :: Types.Observable
+
+	--Crossdirectory presets
+	if Effect then
+		local nmt = getmetatable(Observable) :: any
+
+		-- preset effect extensions
+		nmt.__concat = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) .. (with(value) :: any)
+			end)
+		end
+		nmt.__unm = function(table)
+			return Effect(garbage, function(with, _)
+				return -with(table)
+			end)
+		end
+		nmt.__add = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) + (with(value) :: any)
+			end)
+		end
+		nmt.__sub = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) - (with(value) :: any)
+			end)
+		end
+		nmt.__mul = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) * (with(value) :: any)
+			end)
+		end
+		nmt.__div = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) / (with(value) :: any)
+			end)
+		end
+		nmt.__idiv = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) // (with(value) :: any)
+			end)
+		end
+		nmt.__mod = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) % (with(value) :: any)
+			end)
+		end
+		nmt.__pow = function(table, value)
+			return Effect(garbage, function(with, _)
+				return (with(table) :: any) ^ (with(value) :: any)
+			end)
+		end
+
+		nmt.__eq = function(table, value)
+			return Effect(garbage, function(with, _): any
+				return (with(table) :: any) == (with(value) :: any)
+			end)
+		end
+		nmt.__lt = function(table, value)
+			return Effect(garbage, function(with, _): any
+				return (with(table) :: any) < (with(value) :: any)
+			end)
+		end
+		nmt.__le = function(table, value)
+			return Effect(garbage, function(with, _): any
+				return (with(table) :: any) <= (with(value) :: any)
+			end)
+		end
+	end
 
 	return Observable
 end

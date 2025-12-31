@@ -7,4 +7,6 @@ return {
 	Effect = require(script.Effect),
 	Observer = require(script.Observer),
 	New = require(script.New),
+	Stack = require(script.Stack),
+	Spring = require(script.Spring),
 }

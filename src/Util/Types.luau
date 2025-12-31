@@ -25,7 +25,7 @@ export type State<T, V={}> = {
 	__deleter: () -> (),
 	
 	__value: T,
-	get: (self:State<T, V>) -> T,
+	get: (self:State<T, V>) -> any,
 	
 	__customs: {[string]: any?},
 	connections: {[any]: (any) -> ...any?},
@@ -41,7 +41,7 @@ export type State<T, V={}> = {
 	
 	updater: (
 		self: State<T, V>, 
-		(self: State<T, V>, fn2: (any) -> ...any? ) -> any?
+		nil | (self: State<T, V>, fn2: (any) -> ...any? ) -> any?
 	) -> State<T, V>,
 
 	deleter: (
@@ -55,15 +55,17 @@ export type State<T, V={}> = {
 
 	connect: (
 		self: State<T, V>, name: any?
-	) -> ( nil | (...any?)->() | any? ) -> State<T, V>
+	) -> ( nil | STATE | (...any?)->() | any? ) -> State<T, V>
 } & V
 
 --[=[
 	State value that can be subscribed to
 ]=]
-export type StateObject<T, V={}> = setmetatable<State<T>, {__index: () -> (), __call: (...any)->...any?}> & V --& State<T>
+export type StateObject<T, V={}> = (setmetatable<State<unknown>, {__index: () -> (), __call: (...any)->...any?}> & V ) --& State<T>
 
-export type StateConstructor = (garbage: garbage<unknown>, value: unknown)->(StateObject<unknown>)
+export type STATE = StateObject<unknown> | Observable | Amplified<unknown>
+
+export type StateConstructor = (garbage: garbage, value: unknown)->(StateObject<unknown>)
 
 --[=[
 	Contents of a garbage collector
@@ -71,8 +73,8 @@ export type StateConstructor = (garbage: garbage<unknown>, value: unknown)->(Sta
 export type trashable = 
 	Instance |
 	()->() |
-	State<any?> |
-	StateObject<any?> |
+	State<unknown> |
+	StateObject<unknown> |
 	RBXScriptConnection |
 	{__deleter: ()->()} |
 	{Destroy: ()->()} |
@@ -132,9 +134,6 @@ export type _AMP<T, V={}> = { --}, {} :: {})--__index: (...any?)->(...any?), __n
 	__setter: (T) -> ...any,
 
 	__updater: (
-		a: { 
-			[any]: (self: Amplified<T, V>, k: any, v: any) -> ...any? 
-		}, 
 		any, 
 		any
 	) -> any,
@@ -182,7 +181,7 @@ export type _AMP<T, V={}> = { --}, {} :: {})--__index: (...any?)->(...any?), __n
 
 	connect: (
 		self: Amplified<T, V>, name: any?
-	) -> ( nil | (self: Amplified<T, V>, k: any, v: any)->any? ) -> Amplified<T, V>
+	) -> ( nil | (self: Amplified<T, V>, k: any, v: any)->() | any? ) -> Amplified<T, V>
 } & V
 
 export type Amplified<T, V={}> = setmetatable<_AMP<T, V>, {__index: () -> (), __call: (...any)->...any?}>
@@ -197,29 +196,43 @@ export type Lifetime = (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue
 
 export type mount = <T>(garbage: garbage<any>, object: Instance, amplified: Amplified<unknown>, fn: nil | (self: any, object: Instance)->...any, lifetime: nil | (self: any, object: Instance)->...any)->T
 
-export type SharedAmplified = {
-	All: (SharedAmplified, values: {[string | number]: any?} ) -> SharedAmplified,  
-	For: (SharedAmplified, players: {Player}, values: {[string | number]: any?} ) -> SharedAmplified,
-	getFor: (SharedAmplified, player: Player) -> ...any?,
-
-	__replications: {[Player]: Amplified<unknown, unknown> }
-} & Amplified<unknown, unknown>
-
 --[[ @end_section Amplified Tables ]]
+
+export type Animatable = 
+	number |
+	Vector2 |
+	Vector3 |
+	UDim2 |
+	Color3
+-- NumberRange, NumberSequence, string
 
 --[[ @section Observables ]]
 
 export type Observable = setmetatable<{
+	-- STATE
+
 	connections: { 
 		[any]: (...any?) -> ...any? 
 	},
 	_filter: (any?)->any?,
 
+	__customs: {[any]: any?},
+	__value: any,
+	__deleter: () -> (),
+
+	get: (self: any)->any,
+
 	connect: (
 		self: any,
 		name: any?
-	) -> ( nil | (...any?) -> ...any? ) -> Observable,
+	) -> ( nil | STATE | (...any?) -> () | any? ) -> Observable,
 
+	custom:  (
+		self: Observable, name: string
+	) -> ( any? ) -> Observable,
+
+	-- OBSERVABLE
+	
 	emit: (
 		self: any,
 		...any?
@@ -247,24 +260,24 @@ export type Observable = setmetatable<{
 	take: (Observable, amount: number) -> Observable,
 	last: (Observable) -> Observable,
 
-	filter: (Observable, fn: (...any) -> boolean) -> Observable,
+	filter: (Observable, fn: (self: Observable, ...any) -> boolean) -> Observable,
 	timeout: (Observable, time: number) -> Observable,
 
 	delay: (Observable, time: number) -> Observable,
 	startWith: (Observable, ...any) -> Observable,
 
-	map: (Observable, fn: (...any)->...any) -> Observable,
-	scan: (Observable, fn: (item: any?, result: any?)->...any) -> Observable,
+	map: (Observable, fn: (self: Observable, ...any)->...any) -> Observable,
+	scan: (Observable, fn: (self: Observable, item: any?, result: any?)->...any) -> Observable,
 
 	distinct: (Observable) -> Observable,
 	deduplicate: (Observable) -> Observable,
 
 	timer: (Observable, time: number, item: any) -> Observable,
-	--Range
-	--Interval
 
 	skip: (Observable, amount: number) -> Observable,
 	ignoreElements: (Observable) -> Observable,
+
+	merge: (Observable, {Observable}) -> Observable
 }, {
 	__call: (
 		...any?
@@ -274,11 +287,18 @@ export type Observable = setmetatable<{
 --[[ @end_section Amplified Tables ]]
 
 export type Allure = {
+	_version: {major: number, minor: number, isRelease: boolean},
+--} & AllureRX & AllureBundle
+
+--[[{
 	--_extend: any?,
 	_version: {major: number, minor: number, isRelease: boolean},
-}
+} & extend<Allure, typeof(Config._INCLUDE), AllureRX, AllureBundle>]]
 
-export type AllureRX = {
+--export type AllureRX = {
+
+------ \\\ [[ ALLURE RX ]] ///
+
 	--[=[
 		Creates a garbage collector with methods from the parameters.
 
@@ -415,9 +435,12 @@ export type AllureRX = {
 	]=]
 	Shared: (tbl: {})->(),
 
-}
+--}
 
-export type AllureBundle = {
+--export type AllureBundle = {
+
+------ \\\ [[ ALLURE BUNDLE ]] ///
+
 	--[=[
 		Preset extension Computed.
 	]=]
@@ -431,7 +454,7 @@ export type AllureBundle = {
 	--[=[
 		Preset extension Observer.
 	]=]
-	Observer: (trash: garbage<unknown>)->{_destroy: ()->(), onBind: ((...any?)->())->()->(), onChange: ((...any?)->())->()->()},
+	Observer: (trash: garbage<Allure & {} & any>)->{_destroy: ()->(), onBind: ((...any?)->())->()->(), onChange: ((...any?)->())->()->()},
 
 	--[=[
 		Preset extension New.
@@ -441,7 +464,34 @@ export type AllureBundle = {
 
 		@return Instance
 	]=]
-	New: (trash: garbage<unknown>, object: string) -> (propTable: {[number | string]: any} | Amplified<unknown>) -> Instance
+	New: (trash: garbage<Allure & {} & any>, object: string) -> (propTable: {[number | string]: any} | Amplified<unknown>) -> Instance,
+
+	--[=[
+		Preset extension New.
+
+		@param garbage	*Garbage Collector*
+		@param FIFO	*First-in First-out (true) or Last-in First-out (false)*
+
+		@return State
+	]=]
+	Stack: (trash: garbage<Allure & {} & any>, FIFO: boolean) -> StateObject<any> & {
+		_stack: {},
+		push: (self: StateObject<any> & { _stack: {} }, value: any) -> StateObject<any>,
+		pop: (self: StateObject<any> & { _stack: {} }) -> StateObject<any>
+	},
+
+	--[=[
+		Preset extension Spring.
+		Visit Config for configuration on constant k and the last frame of the spring.
+
+		@param garbage	*Garbage Collector*
+		@param start	*Starting value*
+		@param speed	*Speed of the spring transition*
+		@param damping	*Damping of the spring*
+
+		@return State
+	]=]
+	Spring: <T>(trash: garbage<Allure & {} & any>, start: T & Animatable, speed: number, damping: number) -> StateObject<any>
 }
 
 return nil
