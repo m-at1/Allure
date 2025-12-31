@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <i>Reactive Framework of Frameworks for the Roblox Metaverse.</i> </br>
+  <b><i>Reactive Framework of Frameworks for the Roblox Metaverse.</i></b> </br>
   <i>Inspired by Spring</i>
 </p>
 
@@ -15,9 +15,101 @@
   <a href="https://github.com/m-at1/Alloy/releases"><img width="130" height="50" src="./images/Benchmarks.png" alt="Benchmarks"></a>
 </div>
 
-‎‎‎‎‎‎
-## 🎨 Contains
-- ### AllureRx
+‎‎‎‎‎
+
+# 🍀 *AllureRx*
+- ## *<ins>Fantastic UI Framework</ins>: Amplified Tables*
+  Amplified Tables extend the capabilities far further than any UI framework that there is.
+### StyleSheets
+
+> ```luau
+> --[[ A table that will be used as a stylesheet ]]
+> local frameDesign = {
+>	  Parent = GUI,
+>
+>	  Size = UDim2.fromScale(0.6, 0.7),
+>  	Position = UDim2.fromScale(0.5, 0.5),
+>
+>	  BackgroundColor3 = Color3.new(0.05098, 0.05098, 0.054902),
+>	  BackgroundTransparency = 0.4,
+>	  AnchorPoint = Vector2.new(0.5, 0.5),
+>
+>   --[[ Instances listed without a key are children ]]
+>	  main:New "UIAspectRatioConstraint" {
+>		    AspectRatio = 1.6,
+>	  },
+> }
+>
+> --[[ Creating a frame into the main garbage collector ]]
+> local frame = main:New "Frame" {
+>	  frameDesign,  -- Any table listed without a key is applied!
+>
+>	  main:New "TextButton" {
+>		    frameDesign,
+>
+>         --[[
+>             More tables, higher the order
+>             Thus this second order table can overwrite the stylesheet
+>         ]]
+>		    { {  
+>			      BackgroundTransparency = 0,
+>	      } },
+>	  },
+> }
+- ## *<ins>Reactive Observables</ins>: Generating and filtering data streams*
+  Generate, filter, subscribe to an observable from anywhere.
+### Click Counter
+
+> ```luau
+> --[[ ...:New actually makes the table an amplified and mounts it! ]]
+> main:New "TextButton" {
+>     TextScaled = true,
+>
+>     --[[ You can use any key in Amplifieds ]]
+>		_count = main:Observable(),
+>
+>     --[[
+>         Whenever it is clicked, simply emit 1.
+>         It will be accumulated and turned into a string that we need
+>     ]]
+>		Allure.onEvent "MouseButton1Click"(function(self: Allure.Amplified<any>)
+>			self._count(1)
+>		end),
+>
+>     --[[
+>         Since we need _count to exist, to avoid race conditions,
+>         use the next order by simply wrapping it in a table:
+>     ]]
+>		{
+>			Text = function(self)  -- Amplifieds automatically call functions, we need this so we can reference _count
+>				return self._count
+>					:scan(function(self, value, total)  -- Accumulate the counting value with scan operator
+>						return value + (total or 0)
+>					end)                                -- And turn it into usable text with map operator
+>					:map(function(self, item)
+>						return "Count: " .. item
+>					end)
+>					:emit(0)    -- Emitting the starting value
+>			end,
+>		},
+>	},
+- ## *<ins>Customizable States</ins>: The core to everything*
+  Customize the setter, getter, updater, deleter and create custom attributes.
+  States are interchangeable with observables or amplifieds, since they share all of these capabilities.
+### Click to change size
+...
+
+# 🧱 *AllureBundle*
+- ## *<ins>Stack and Spring</ins>: query and animate*
+  Stacks and Springs are made given simple State customization. </br>You can make them yourself!
+### Slider
+...
+
+- ## *<ins>Effect, Computed, Observer</ins>: state needs*
+  ...
+### ...
+...
+
   - ***Heavily customizable composition of garbage collection, states and Observables***
     - Customize the setter, getter, updater, deleter of states, create custom attributes and more.
     - Seamlessly combine and react to observable streams and states.
