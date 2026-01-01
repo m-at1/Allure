@@ -14,7 +14,6 @@
   <a href="https://github.com/m-at1/Alloy/releases"><img width="160" height="50" src="./images/Docs.png" alt="Docs"></a>ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ‎‎‎‎‎‎‎‎ㅤ
   <a href="https://github.com/m-at1/Alloy/releases"><img width="130" height="50" src="./images/Benchmarks.png" alt="Benchmarks"></a>
 </div>
-
 ‎‎‎‎‎
 
 # 🍀 *AllureRx*
@@ -56,6 +55,7 @@
 >	      } },
 >	  },
 > }
+>```
 - ## *<ins>Reactive Observables</ins>: Generating and filtering data streams*
   Generate, filter, subscribe to an observable from anywhere.
 ### Click Counter
@@ -92,23 +92,111 @@
 >					:emit(0)    -- Emitting the starting value
 >			end,
 >		},
->	},
-- ## *<ins>Customizable States</ins>: The core to everything*
-  Customize the setter, getter, updater, deleter and create custom attributes.
+>},
+>```
+  This is not the best usage for observables, but a rather simple one. </br>
+  Count the lines, because we're going to optimize it multiple times!
+  
+- ## *<ins>Customizable States</ins>: A low level core to everything*
+  Customize the setter, getter, updater, deleter and create custom attributes. </br>
   States are interchangeable with observables or amplifieds, since they share all of these capabilities.
-### Click to change size
-...
+### I simplified the click counter
+> ```luau
+>main:New "TextButton" {
+>
+>     -- A state for the counter text
+>		Text = main:State("Count: 0")
+>			:custom "count"(0)  -- A custom attribute to have the current count
+>			:setter(function(self, item)  -- And a custom setter to update the count, value and call connections (updater)
+>				self.count = item
+>				Allure.set(self, "Count: " .. item)
+>  			self:updater()
+>			end),
+> 
+>     -- Whenever it is clicked, set the state to the next number
+>		Allure.onEvent "MouseButton1Click"(function(self)
+>			self.Text(self.Text.count + 1)
+>		end),
+>},
+>```
+
+- ## *<ins>Simple Garbage Collection</ins>: Integrated into everything*
+  For cleanup, simply call the garbage collector as a function. </br> After cleanup the garbage collector still can be used as fresh.
+### GC
+> ```luau
+>main = Allure:garbage {insert = table.insert}
+>
+>main:insert(function()  -- Upon cleanup functions are called, instances are deleted, etc.
+>    print("cleanup called!")
+>end)
+>
+>main() -- cleanup called!
+>```
 
 # 🧱 *AllureBundle*
 - ## *<ins>Stack and Spring</ins>: query and animate*
-  Stacks and Springs are made given simple State customization. </br>You can make them yourself!
-### Slider
-...
+  Stacks and Springs are made given simple State customization. </br>You can easily make them yourself!
+### Random Color
+>```luau
+>main:New "TextButton" {
+>    BackgroundColor3 = main:Spring(Color3.new(1, 1, 1), 2, 0.8),
+>
+>    Allure.onEvent "MouseButton1Click"(function(self)
+>        self.BackgroundColor3(Color3.new(   -- Spring is just a state with a heavily modified setter, so we simply call it with the goal value
+>            math.random(1, 100) / 100,
+>            math.random(1, 100) / 100,
+>            math.random(1, 100) / 100
+>        ))
+>    end),
+>}
+>```
 
 - ## *<ins>Effect, Computed, Observer</ins>: state needs*
+  Inspired by Fusion, however, all of these are also made simply given state customization.
+### I simplified the click counter again
+>```luau
+>main:New "TextButton" {
+>    count = main:State(0),
+>
+>    Text = function(self)
+>        return main:Effect(function(with, innergarbage)
+>            return "Count: " .. with(self.count)
+>        end)
+>    end,
+>
+>    Allure.onEvent "MouseButton1Click"(function(self)
+>        self.count(self.count:get() + 1)
+>    end),
+>},
+>```
+
+- ## *<ins>Effect Shortcuts</ins>: simpler, faster, easier*
+  A lot of simple effects like `with(a) + b`, no matter if a is an observable, state or anything else, can be shortened to simply `a + b`.
+### I simplified it even more
+>```luau
+>main:New "TextButton" {
+>    count = main:State(0),
+>
+>    Text = function(self)
+>        return "Count: " .. self.count
+>    end,
+>
+>    Allure.onEvent "MouseButton1Click"(function(self)
+>        self.count(self.count:get() + 1)
+>    end),
+>},
+>```
+
+# ⚡ *AllureNet*
+- ## *<ins>State Synchronization</ins>: Shared Amplified Tables*
   ...
 ### ...
-...
+
+- ## *<ins>Guarded Observable Data Stream</ins>: Protocol*
+  ...
+### ...
+
+.......
 
   - ***Heavily customizable composition of garbage collection, states and Observables***
     - Customize the setter, getter, updater, deleter of states, create custom attributes and more.
