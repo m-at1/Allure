@@ -26,26 +26,22 @@
 ### StyleSheets
 
 > ```luau
-> --[[ A table that will be used as a stylesheet ]]
 > local frameDesign = {
 >	  Parent = GUI,
 >
 >	  Size = UDim2.fromScale(0.6, 0.7),
 >  	Position = UDim2.fromScale(0.5, 0.5),
->
 >	  BackgroundColor3 = Color3.new(0.05098, 0.05098, 0.054902),
->	  BackgroundTransparency = 0.4,
->	  AnchorPoint = Vector2.new(0.5, 0.5),
 >
->   --[[ Instances listed without a key are children ]]
+>     --[[ Instances without a key are children when used in amplifieds ]]
 >	  main:New "UIAspectRatioConstraint" {
 >		    AspectRatio = 1.6,
 >	  },
 > }
 >
-> --[[ Creating a frame into the main garbage collector ]]
+> --[[ ...:New actually makes the table an amplified and mounts it! ]]
 > local frame = main:New "Frame" {
->	  frameDesign,  -- Any table listed without a key is applied!
+>	  frameDesign,  -- Tables without a key are merged with the amplified!
 >
 >	  main:New "TextButton" {
 >		    frameDesign,
@@ -65,7 +61,6 @@
 ### Click Counter
 
 > ```luau
-> --[[ ...:New actually makes the table an amplified and mounts it! ]]
 > main:New "TextButton" {
 >     TextScaled = true,
 >
@@ -76,7 +71,7 @@
 >         Whenever it is clicked, simply emit 1.
 >         It will be accumulated and turned into a string that we need
 >     ]]
->		Allure.onEvent "MouseButton1Click"(function(self: Allure.Amplified<any>)
+>		Allure.onEvent "MouseButton1Click"(function(self)
 >			self._count(1)
 >		end),
 >
@@ -85,15 +80,22 @@
 >         use the next order by simply wrapping it in a table:
 >     ]]
 >		{
->			Text = function(self)  -- Amplifieds automatically call functions, we need this so we can reference _count
+>         -- Amplifieds automatically call functions,
+>         -- we need this so we can reference _count
+>			Text = function(self)
 >				return self._count
->					:scan(function(self, value, total)  -- Accumulate the counting value with scan operator
+>                 -- Accumulate the counting value with scan operator
+>					:scan(function(self, value, total)
 >						return value + (total or 0)
->					end)                                -- And turn it into usable text with map operator
+>					end)
+> 
+>                 -- Turn it into usable text with map operator
 >					:map(function(self, item)
 >						return "Count: " .. item
 >					end)
->					:emit(0)    -- Emitting the starting value
+> 
+>                 -- Emit the starting value
+>					:emit(0)
 >			end,
 >		},
 >},
@@ -110,14 +112,17 @@
 >
 >     -- A state for the counter text
 >		Text = main:State("Count: 0")
->			:custom "count"(0)  -- A custom attribute to have the current count
->			:setter(function(self, item)  -- And a custom setter to update the count, value and call connections (updater)
+>         -- A custom attribute to have the current count
+>			:custom "count"(0)
+>         -- And a custom setter to update the count, value and call connections (updater)
+>			:setter(function(self, item)
 >				self.count = item
 >				Allure.set(self, "Count: " .. item)
 >  			self:updater()
 >			end),
 > 
 >     -- Whenever it is clicked, set the state to the next number
+>     -- This calls the setter, which does everything we need
 >		Allure.onEvent "MouseButton1Click"(function(self)
 >			self.Text(self.Text.count + 1)
 >		end),
@@ -130,7 +135,8 @@
 > ```luau
 >main = Allure:garbage {insert = table.insert}
 >
->main:insert(function()  -- Upon cleanup functions are called, instances are deleted, etc.
+>-- Upon cleanup functions are called, instances are deleted, etc.
+>main:insert(function()
 >    print("cleanup called!")
 >end)
 >
@@ -146,7 +152,9 @@
 >    BackgroundColor3 = main:Spring(Color3.new(1, 1, 1), 2, 0.8),
 >
 >    Allure.onEvent "MouseButton1Click"(function(self)
->        self.BackgroundColor3(Color3.new(   -- Spring is just a state with a heavily modified setter, so we simply call it with the goal value
+>        -- Spring is just a state with a heavily modified setter,
+>        -- so we simply call it with the goal value
+>        self.BackgroundColor3(Color3.new(
 >            math.random(1, 100) / 100,
 >            math.random(1, 100) / 100,
 >            math.random(1, 100) / 100
@@ -163,6 +171,7 @@
 >    count = main:State(0),
 >
 >    Text = function(self)
+>        -- An effect that'll update each time self.count updates
 >        return main:Effect(function(with, innergarbage)
 >            return "Count: " .. with(self.count)
 >        end)
@@ -203,7 +212,7 @@
 
 ## 🔮 What you can expect for 1.0.0
 - *AllureActor*
-- *AllureDB*
+- *AllureProvider*
 - *AllureMVC*
 
 ---
