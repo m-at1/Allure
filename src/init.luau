@@ -1,7 +1,5 @@
 --!strict
 
-local Config = require "@self/Config"
-
 local UTIL = require(script.Util)
 local Types = require(script.Util.Types)
 
@@ -31,8 +29,11 @@ type function extend(ty: type, _INCLUDE: type, AllureRX: type, AllureBundle: typ
 	return ty
 end
 
-local Allure = table.freeze(
-	UTIL.extend({ _version = { major = 0, minor = 1, patch = 0, isRelease = false } } :: Types.Allure, Config._INCLUDE) :: {}
-) :: Types.Allure --:: extend<Types.Allure, typeof(Config._INCLUDE), Types.AllureRX, Types.AllureBundle>
+local Allure =
+	table.freeze(UTIL.extend({ _version = { major = 0, minor = 1, patch = 0, isRelease = false } } :: Types.Allure, {
+		"AllureRX",
+		"AllureBundle",
+		Worker = "AllureWorker",
+	}) :: {}) :: Types.Allure --:: extend<Types.Allure, typeof(Config._INCLUDE), Types.AllureRX, Types.AllureBundle>
 
 return Allure

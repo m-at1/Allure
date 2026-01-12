@@ -2,14 +2,11 @@
 
 --stylua: ignore start
 
---[[ @section util ]]
 
 export type Callable = (...any?) -> (...any?) | typeof(setmetatable({}, {} :: {__call: (...any?) -> (...any?)}))
 
 export type SpecialValue<K, P> = {["__kind"]: K} & P
---[[ @end_section util ]]
 
---[[ @section State ]]
 
 --[=[
 	Inner state block representation inhabiting __value, setter getter deleter updater custom and connect
@@ -125,9 +122,8 @@ export type garbageConstructor =
 	& (<T, V, E, D, F, A, B, C, I>(T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}) -> garbage & T & V & E & D & F & A & B & C & I)
 	& (<T, V, E, D, F, A, B, C, I, J>(T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}) -> garbage & T & V & E & D & F & A & B & C & I & J)
 	& (<T, V, E, D, F, A, B, C, I, J, K>(T & {}, V & {}, E & {}, D & {}, F & {}, A & {}, B & {}, C & {}, I & {}, J & {}, K & {}) -> garbage & T & V & E & D & F & A & B & C & I & J & K)
---[[ @end_section State ]]
 
---[[ @section Amplified Tables ]]
+
 
 export type _AMP<T, V={}> = { --}, {} :: {})--__index: (...any?)->(...any?), __newindex: (...any?)->(...any?)} )
 	__getter: () -> T,
@@ -196,7 +192,7 @@ export type Lifetime = (fn: (self: Amplified<unknown>)->...any?) -> SpecialValue
 
 export type mount = <T>(garbage: garbage<any>, object: Instance, amplified: Amplified<unknown>, fn: nil | (self: any, object: Instance)->...any, lifetime: nil | (self: any, object: Instance)->...any)->T
 
---[[ @end_section Amplified Tables ]]
+
 
 export type Animatable = 
 	number |
@@ -206,7 +202,7 @@ export type Animatable =
 	Color3
 -- NumberRange, NumberSequence, string
 
---[[ @section Observables ]]
+
 
 export type Observable = setmetatable<{
 	-- STATE
@@ -254,6 +250,7 @@ export type Observable = setmetatable<{
 	) -> Observable
 } & {
 	---list of observable operators
+
 	pipe: (Observable) -> Observable,
 
 	--transformation
@@ -284,7 +281,24 @@ export type Observable = setmetatable<{
 	) -> Observable,
 }>
 
---[[ @end_section Amplified Tables ]]
+
+
+export type Worker<S> = setmetatable<
+	S & {
+		thread: thread,
+		respawn: (any)->(),
+		__deleter: ()->()
+	}, 
+	{
+		__newindex: (t: any, k: any, v: any) -> ()
+}>
+
+export type WorkerConstructor = 
+	(() -> Worker<{}>)
+	& (<S>({trashable}, S) -> Worker<S>) 
+	& (<S>(S) -> Worker<S>) 
+
+
 
 export type Allure = {
 	_version: {major: number, minor: number, isRelease: boolean},
@@ -491,7 +505,18 @@ export type Allure = {
 
 		@return State
 	]=]
-	Spring: <T>(trash: garbage<Allure & {} & any>, start: T & Animatable, speed: number, damping: number) -> StateObject<any>
+	Spring: <T>(trash: garbage<Allure & {} & any>, start: T & Animatable, speed: number, damping: number) -> StateObject<any>,
+
+
+------ \\\ [[ ALLURE WORKER ]] ///
+
+	--[=[
+		Creates a Worker. </br>
+		Can be used with AllureRX garbage collectors.
+
+		@return Worker
+	]=]
+	Worker: WorkerConstructor
 }
 
 return nil

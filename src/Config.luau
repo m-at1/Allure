@@ -1,11 +1,6 @@
 --!strict
 
 return table.freeze {
-	_INCLUDE = {
-		AllureRX = true,
-		AllureBundle = true,
-	},
-
 	garbage_recursion_limit = 6,
 
 	SPRING_RENDERSTEP_PRIORITY = 10,

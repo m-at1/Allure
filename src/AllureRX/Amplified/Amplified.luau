@@ -160,11 +160,14 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 
 	local ___nindex = function(_, k, v)
 		-- case 3: if v was a state/different state, disconnect it
-		if self._states[k] then
-			self._states[k]:connect(self._updaters[k])(nil)
+		if rawget(self._states, k) then
+			rawget(self._states :: any, k):connect(self._updaters[k])(nil)
+			rawget(self._states :: any, k)[k] = nil
 		end
 		self._updaters[k] = nil
-		self._states[k] = nil
+		----rawget(self._states :: any, k)[k] = nil
+		--self._states[k] = nil
+
 		for _, st in self._onsets do
 			st[k] = nil
 		end
@@ -179,13 +182,9 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 				--warn "here";
 				(self.__value :: any)[key] = val:get()
 
-				warn("test", key, val)
-
 				--nestval() was here!
 
 				self._states[key] = val :: any
-
-				warn(self._states)
 
 				self._updaters[key] = function()
 					--warn("test", key, val, val:get())
@@ -200,7 +199,6 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 
 			-- case 6, if v is a function
 			elseif typeof(val) == "function" then
-				warn(val(self))
 				nestval(key, val(self))
 
 				-- case 4, if v is an onChange event that can be handled inside of the amplified
@@ -258,7 +256,6 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 		___nindex(nil, k :: any, v)
 	end
 
-	print(next__order)
 	-- // ORDERING
 	repeat
 		local _nx: any = Util.deepClone(next__order)

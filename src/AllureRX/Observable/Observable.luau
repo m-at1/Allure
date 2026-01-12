@@ -223,7 +223,7 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 		--new._filter = filter
 
 		local fn: any = nil
-		fn = function(...)
+		fn = function(t: any, ...)
 			if not new or not new.emit then
 				self:unsubscribe(fn)
 				return
@@ -497,7 +497,7 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 
 	Observable = setmetatable(Observable, {
 		__index = Observable.__customs,
-		__call = curry(Observable.emit, Observable),
+		__call = Observable.emit, --curry(Observable.emit, Observable),
 	}) :: Types.Observable
 
 	--Crossdirectory presets
