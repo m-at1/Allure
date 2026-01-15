@@ -12,7 +12,9 @@ jobs:
       contents: write
       pages: write
       id-token: write
-
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,6 +25,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: './docs/package-lock.json'
 
       - name: Setup VitePress
         run: npm install
@@ -30,11 +33,6 @@ jobs:
       - name: Build VitePress site
         run: npm run docs:build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload the build output directory (default is docs/.vitepress/dist)
-          path: docs/.vitepress/dist
-
-      - name: Deploy to GitHub Pages
+      - name: Deploy
+        id: deployment
         uses: actions/deploy-pages@v4
