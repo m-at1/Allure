@@ -93,7 +93,8 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 		self: Types.Amplified<unknown>,
 		fn: (
 			self: Types.Amplified<unknown>,
-			fn2: (self: Types.Amplified<unknown>, k: any, v: any) -> ...any?
+			--fn2: (self: Types.Amplified<unknown>, k: any, v: any) -> ...any?
+			connections: { [any]: (any) -> ...any? }
 		) -> any?
 	)
 		if not fn then
@@ -106,9 +107,10 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 			k: any,
 			v: any
 		)
-			for _, f in pairs(self.connections) do
+			--[[for _, f in pairs(self.connections) do
 				fn(self, f)
-			end
+			end]]
+			fn(self, self.connections :: { [any]: (any) -> ...any? })
 			return 1
 		end
 		return self
@@ -145,12 +147,21 @@ function constructor<T>(trash: any, initialvalue: T & { [any]: any }): any
 	): (
 		fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> () | any?
 	) -> Types.Amplified<unknown>
-		return function(fn: nil | (self: Types.Amplified<unknown>, k: any, v: any) -> () | any?)
+		return function(fn: nil | Types.STATE | (self: Types.Amplified<unknown>, k: any, v: any) -> () | any?)
 			if name == nil then
 				name = fn
 			end
 
 			self.connections[name] = fn
+
+			if fn and typeof(fn) ~= "function" then
+				--(fn.connect :: any)(fn)(function()
+				self.connect(fn)(function()
+					--self.__setter((fn.get :: any)(fn))
+					(fn :: any).__setter(self:get())
+				end)
+				return self
+			end
 
 			return self
 		end

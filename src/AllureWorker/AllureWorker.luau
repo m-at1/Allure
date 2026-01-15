@@ -12,17 +12,9 @@ end
 
 return function<S>(t: S | Types.garbage, t0: S?): Types.Worker<S>
 	--Garbage collector capability
-	local Worker: S & {
-		thread: thread,
-		respawn: (any) -> (),
-		__deleter: () -> (),
-	} = t0 and t0
-		or t :: any
-		or {} :: S & {
-			thread: thread,
-			respawn: (any) -> (),
-			__deleter: () -> (),
-		}
+	local Worker: Types.Worker<S> = t0 and t0 or t :: Types.Worker<S> or {} :: Types.Worker<S>
+
+	-- // usables
 
 	local THREAD: thread
 
@@ -47,6 +39,8 @@ return function<S>(t: S | Types.garbage, t0: S?): Types.Worker<S>
 	end
 	respawn()
 
+	-- // actual stuff
+
 	Worker.respawn = function(_: any)
 		kill()
 
@@ -63,9 +57,11 @@ return function<S>(t: S | Types.garbage, t0: S?): Types.Worker<S>
 		table.insert(t, Worker.__deleter)
 	end
 
+	-- // useless stuff
+
 	local function __nindex(_, k, v)
 		if typeof(v) == "function" then
-			--v = curry(v, Worker)      There's no point in doing this, just kills  the point of :ask() and .ask() ;;;; you can remove the metatable
+			--v = curry(v, Worker)
 		end
 
 		rawset(Worker, k, v)
@@ -78,8 +74,9 @@ return function<S>(t: S | Types.garbage, t0: S?): Types.Worker<S>
 	--[[Worker = setmetatable(Worker :: any, {
 		--__newindex = __nindex,
 	}) :: Types.Worker<S>]]
+	return Worker :: Types.Worker<S>
 
-	return setmetatable(Worker :: any, {
+	--[[return setmetatable(Worker :: any, {
 		--__newindex = __nindex,
-	}) :: Types.Worker<S>
+	}) :: Types.Worker<S>]]
 end :: Types.WorkerConstructor

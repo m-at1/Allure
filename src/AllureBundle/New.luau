@@ -3,8 +3,8 @@
 local UTIL = script.Parent.Parent.Util
 local Types = require(UTIL.Types)
 
-local Amplify = require(script.Parent.Parent.AllureRX.Amplified.Amplified)
-local mount = require(script.Parent.Parent.AllureRX.Amplified.mount)
+local Amplify = require(script.Parent.Parent.AllureUI.Amplified.Amplified)
+local mount = require(script.Parent.Parent.AllureUI.Amplified.mount)
 
 return function(
 	trash: Types.garbage<unknown>,

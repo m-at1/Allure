@@ -8,12 +8,13 @@ local Types = require(UTIL.Types)
 -- Crossdirectory: Effect used by State metamethods
 local Effect = nil :: any
 if script.Parent.Parent.Parent:FindFirstChild "AllureBundle" then
+	print "213123123"
 	Effect = require(script.Parent.Parent.Parent.AllureBundle.Effect)
 end
 
 function StateConstructor(trash: any, initialvalue: unknown): any
 	if typeof(trash) ~= "table" then
-		Log.logError("AllureRX", "noGarbage", "...:State(...)")
+		Log.logError("AllureUI", "noGarbage", "...:State(...)")
 	end
 
 	local self: Types.State<unknown> = { __value = initialvalue } :: Types.State<unknown>
@@ -23,6 +24,7 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 	end
 
 	self.__setter = function(args)
+		--memoization
 		if self.__value == args :: any then
 			return self.__value
 		end
@@ -78,16 +80,20 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 		return self
 	end
 
-	self.updater = function(self, fn: nil | (self: Types.State<unknown>, fn2: (any) -> ...any?) -> any?)
+	self.updater = function(
+		self: Types.State<unknown>,
+		fn: nil | (self: Types.State<unknown>, connections: { [any]: (any) -> ...any? }) -> any?
+	) --(any) -> ...any?) -> any?)
 		if not fn then
 			self.__updater(self.connections)
 			return self
 		end
 
 		self.__updater = function()
-			for _, f in pairs(self.connections :: { [any]: (any) -> ...any? }) do
+			--[[for _, f in pairs(self.connections :: { [any]: (any) -> ...any? }) do
 				fn(self, f)
-			end
+			end]]
+			fn(self, self.connections :: { [any]: (any) -> ...any? })
 		end
 		return self
 	end
@@ -123,8 +129,10 @@ function StateConstructor(trash: any, initialvalue: unknown): any
 			end
 
 			if fn and typeof(fn) ~= "function" then
-				(fn.connect :: any)(fn)(function()
-					self.__setter((fn.get :: any)(fn))
+				--(fn.connect :: any)(fn)(function()
+				self.connect(fn)(function()
+					--self.__setter((fn.get :: any)(fn))
+					(fn :: any).__setter(self:get())
 				end)
 				return self
 			end

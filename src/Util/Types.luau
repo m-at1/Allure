@@ -1,3 +1,4 @@
+
 --!strict
 
 --stylua: ignore start
@@ -38,7 +39,7 @@ export type State<T, V={}> = {
 	
 	updater: (
 		self: State<T, V>, 
-		nil | (self: State<T, V>, fn2: (any) -> ...any? ) -> any?
+		nil | (self: State<T, V>, connections: { [any]: (any) -> ...any? } ) -> any?
 	) -> State<T, V>,
 
 	deleter: (
@@ -163,7 +164,7 @@ export type _AMP<T, V={}> = { --}, {} :: {})--__index: (...any?)->(...any?), __n
 	
 	updater: (
 		self: Amplified<T, V>, 
-		(self: Amplified<T, V>, fn2: (any) -> ...any? ) -> any?
+		(self: Amplified<T, V>, connections: { [any]: (any) -> ...any? }) -> any? -- fn2: (any) -> ...any? ) -> any?
 	) -> Amplified<T, V>,
 
 	deleter: (
@@ -177,7 +178,7 @@ export type _AMP<T, V={}> = { --}, {} :: {})--__index: (...any?)->(...any?), __n
 
 	connect: (
 		self: Amplified<T, V>, name: any?
-	) -> ( nil | (self: Amplified<T, V>, k: any, v: any)->() | any? ) -> Amplified<T, V>
+	) -> ( nil | StateObject<unknown> | _AMP<T, V> | (self: Amplified<T, V>, k: any, v: any)->() | any? ) -> Amplified<T, V>
 } & V
 
 export type Amplified<T, V={}> = setmetatable<_AMP<T, V>, {__index: () -> (), __call: (...any)->...any?}>
@@ -213,6 +214,7 @@ export type Observable = setmetatable<{
 	_filter: (any?)->any?,
 
 	__customs: {[any]: any?},
+	__setter: (self: any, ...any?) -> Observable,
 	__value: any,
 	__deleter: () -> (),
 
@@ -251,7 +253,7 @@ export type Observable = setmetatable<{
 } & {
 	---list of observable operators
 
-	pipe: (Observable) -> Observable,
+	--pipe: (Observable) -> Observable,
 
 	--transformation
 	take: (Observable, amount: number) -> Observable,
@@ -283,15 +285,16 @@ export type Observable = setmetatable<{
 
 
 
-export type Worker<S> = setmetatable<
+export type Worker<S> = --setmetatable<
 	S & {
 		thread: thread,
 		respawn: (any)->(),
 		__deleter: ()->()
-	}, 
-	{
+	} 
+
+--[[	{
 		__newindex: (t: any, k: any, v: any) -> ()
-}>
+}>]]
 
 export type WorkerConstructor = 
 	(() -> Worker<{}>)
@@ -444,11 +447,6 @@ export type Allure = {
 	]=]
 	Interval: (garbage: garbage<any>, interval: number)->Observable,
 
-	--[=[
-		unfinished
-	]=]
-	Shared: (tbl: {})->(),
-
 --}
 
 --export type AllureBundle = {
@@ -488,10 +486,11 @@ export type Allure = {
 
 		@return State
 	]=]
-	Stack: (trash: garbage<Allure & {} & any>, FIFO: boolean) -> StateObject<any> & {
+	Stack: (trash: garbage<Allure & {} & any>, FIFO: boolean, length: number?) -> StateObject<any> & {
 		_stack: {},
 		push: (self: StateObject<any> & { _stack: {} }, value: any) -> StateObject<any>,
-		pop: (self: StateObject<any> & { _stack: {} }) -> StateObject<any>
+		pop: (self: StateObject<any> & { _stack: {} }) -> StateObject<any>,
+		ratelimit: (self: StateObject<any>, amount: number, perSeconds: number) -> StateObject<any>
 	},
 
 	--[=[

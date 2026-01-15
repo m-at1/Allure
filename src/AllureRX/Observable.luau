@@ -1,18 +1,26 @@
 --!strict
 
-local State = require "../State/State"
-local Promise = require(script.Parent.Parent.Parent["Promise"])
-local Types = require(script.Parent.Parent.Parent.Util.Types)
+-- This realization requires STATES and AllureUI
+-- EDIT: Reoptimize it because this is bloat
+local State = require "../AllureUI/State/State"
+local Promise = require(script.Parent.Parent["Promise"])
+local Types = require(script.Parent.Parent.Util.Types)
 
 -- Crossdirectory: Effect used by State metamethods
 local Effect = nil :: any
-if script.Parent.Parent.Parent:FindFirstChild "AllureBundle" then
-	Effect = require(script.Parent.Parent.Parent.AllureBundle.Effect)
+if script.Parent.Parent:FindFirstChild "AllureBundle" then
+	Effect = require(script.Parent.Parent.AllureBundle.Effect)
 end
 
 function curry(fn, x)
 	return function(...)
 		fn(x, ...)
+	end
+end
+
+function last_apply(fn)
+	return function(x, ...)
+		fn(...)
 	end
 end
 
@@ -57,9 +65,18 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 				name = fn
 			end
 
-			if fn and typeof(fn) ~= "function" then
+			--[[if fn and typeof(fn) ~= "function" then
 				(fn.connect :: any)(fn)(function()
 					Observable:emit((fn.get :: any)(fn))
+				end)
+				return Observable
+			end]]
+
+			if fn and typeof(fn) ~= "function" then
+				--(fn.connect :: any)(fn)(function()
+				Observable.connect(fn)(function()
+					--self.__setter((fn.get :: any)(fn))
+					(fn :: any).__setter(Observable:get())
 				end)
 				return Observable
 			end
@@ -133,6 +150,7 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 	end
 
 	Observable.__value = nil
+	Observable.__setter = emission
 
 	Observable.get = function(self: any)
 		return Observable.__value
@@ -497,7 +515,7 @@ ObservableConstructor = function(garbage: Types.garbage<any>): Types.Observable
 
 	Observable = setmetatable(Observable, {
 		__index = Observable.__customs,
-		__call = Observable.emit, --curry(Observable.emit, Observable),
+		__call = last_apply(emission), --Observable.emit, --curry(Observable.emit, Observable),
 	}) :: Types.Observable
 
 	--Crossdirectory presets

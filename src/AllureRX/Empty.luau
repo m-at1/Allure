@@ -1,6 +1,6 @@
 --!strict
-local Promise = require(script.Parent.Parent.Parent["Promise"])
-local Types = require "../../Util/Types"
+local Promise = require(script.Parent.Parent["Promise"])
+local Types = require "../Util/Types"
 local Observable = require "./Observable"
 
 return function(garbage: Types.garbage<any>)
