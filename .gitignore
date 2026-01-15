@@ -11,3 +11,5 @@ ServerPackages/
 wally.lock
 rokit.toml
 stylua.toml
+node_modules
+package-lock.json
